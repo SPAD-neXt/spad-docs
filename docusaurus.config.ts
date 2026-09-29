@@ -33,6 +33,25 @@ const config: Config = {
     locales: ['en'],
   },
 
+  markdown: {
+    // The CMS's `sidebar_position` field is optional (widget: number,
+    // required: false); when an editor saves an entry without setting it,
+    // Sveltia (like Decap before it) writes `sidebar_position: null` into
+    // the frontmatter rather than omitting the key - confirmed live when
+    // saving docs/README.mdx broke the build with "sidebar_position must
+    // be a number". Docusaurus's own schema accepts a number or an absent
+    // key, but not an explicit null (unlike pagination_prev/pagination_next,
+    // where null is a valid, intentional value) - so strip it here rather
+    // than trust every future CMS save to never reintroduce this.
+    parseFrontMatter: async (params) => {
+      const result = await params.defaultParseFrontMatter(params);
+      if (result.frontMatter.sidebar_position === null) {
+        delete result.frontMatter.sidebar_position;
+      }
+      return result;
+    },
+  },
+
   presets: [
     [
       'classic',
