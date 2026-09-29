@@ -35,3 +35,15 @@
   --ifm-color-primary-lightest: #fecaca;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/*
+ * Admonitions (:::info / :::warning / :::danger / :::tip): keep only the
+ * colored alert box, drop the icon + type-label heading row above the
+ * content. Docusaurus renders that heading as a CSS-module class with a
+ * build-specific hash suffix (e.g. admonitionHeading_Gvgb), so this
+ * targets the stable name prefix via an attribute selector rather than
+ * the full hashed class name.
+ */
+[class*='admonitionHeading_'] {
+  display: none;
+}
