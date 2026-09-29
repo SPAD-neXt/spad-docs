@@ -462,11 +462,42 @@ def fix_all_remaining_gitbook_blocks(content):
     return content
 
 
+YOUTUBE_ID_PATTERN = re.compile(
+    r'(?:youtu\.be/|youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/))'
+    r'([A-Za-z0-9_-]{11})'
+)
+
+
+def extract_youtube_id(url):
+    """Return the 11-char YouTube video ID for a youtu.be/youtube.com URL, or None."""
+    match = YOUTUBE_ID_PATTERN.search(url)
+    return match.group(1) if match else None
+
+
+def render_embed_link(url, caption):
+    """
+    Render one converted embed as MDX. YouTube URLs (the overwhelming
+    majority - 199 of 199 in the SPAD.neXt source) render as a <VideoLink>
+    card (thumbnail + play button + caption, globally available via
+    src/theme/MDXComponents.tsx - no per-file import needed) instead of a
+    bare text link, which was flagged as "extrem unschoen" (plain stacked
+    text links, no visual distinction) once seen in the real site. Any
+    non-YouTube embed (none currently exist, but kept as a safety net)
+    falls back to a plain markdown link.
+    """
+    video_id = extract_youtube_id(url)
+    if video_id:
+        safe_title = caption.replace('"', '&quot;') if caption else url
+        return f'<VideoLink id="{video_id}" title="{safe_title}" />'
+    link_text = caption if caption else url
+    return f'[{link_text}]({url})'
+
+
 def fix_gitbook_embed_blocks(content):
     """
-    Convert GitBook embed blocks to plain markdown links, using the embed's
-    own caption text as the link text (falling back to the URL if there is
-    no caption).
+    Convert GitBook embed blocks to a <VideoLink> card for YouTube URLs
+    (plain markdown link otherwise), using the embed's own caption text as
+    the title/link text (falling back to the URL if there is no caption).
 
     GitBook embed syntax:
         {% embed url="https://youtu.be/ID" %}
@@ -522,14 +553,13 @@ def fix_gitbook_embed_blocks(content):
 
         if close_match:
             caption = re.sub(r'\s+', ' ', search_region[:close_match.start()]).strip()
-            link_text = caption if caption else url
-            pieces.append(f'[{link_text}]({url})')
+            pieces.append(render_embed_link(url, caption))
             cursor = open_match.end() + close_match.end()
             print(f"[DEBUG] Converted embed block: {url!r} (caption: {caption!r})")
         else:
             # No matching {% endembed %} before the next embed (or EOF):
-            # a caption-less embed. Render the URL itself as the link text.
-            pieces.append(f'[{url}]({url})')
+            # a caption-less embed. Render the URL itself as the title/link text.
+            pieces.append(render_embed_link(url, ''))
             cursor = open_match.end()
             print(f"[DEBUG] Converted caption-less/unclosed embed block: {url!r}")
 
@@ -1250,6 +1280,27 @@ def rewrite_asset_references(output_root, rename_map):
     print(f"[INFO] Rewrote sanitized asset references in {files_changed} files")
 
 
+def ensure_site_root_slug(content, output_path):
+    """
+    docs/README.mdx is this site's home page (docusaurus.config.ts sets
+    `docs.routeBasePath` to '/'), which requires `slug: /` in its
+    frontmatter to actually serve at the site root. Previously this was a
+    one-off manual edit made directly to the generated file, which a full
+    re-run of this script would silently overwrite (regenerating README.mdx
+    from source with no slug, breaking the site root) - so it's asserted
+    here instead, making a re-run idempotent.
+    """
+    if os.path.abspath(output_path) != os.path.join(OUTPUT_ROOT, 'README.mdx'):
+        return content
+    if re.search(r'^slug:\s*/\s*$', content, re.MULTILINE):
+        return content
+    lines = content.split('\n')
+    if lines and lines[0].strip() == '---':
+        lines.insert(1, 'slug: /')
+        return '\n'.join(lines)
+    return '---\nslug: /\n---\n' + content
+
+
 def convert_file(input_file):
     """Convert a single file from GitBook MD to Docusaurus MDX."""
     output_path = get_output_path(input_file, SOURCE_ROOT, OUTPUT_ROOT)
@@ -1332,6 +1383,8 @@ def convert_file(input_file):
 
     print("[DEBUG] Step 14: Fix frontmatter structure (final)")
     content = fix_frontmatter_structure(content)
+
+    content = ensure_site_root_slug(content, output_path)
 
     print(f"[DEBUG] Output: {output_path} (JSX detected: {has_jsx})")
 
