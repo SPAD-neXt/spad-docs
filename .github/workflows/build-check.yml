@@ -13,12 +13,26 @@ name: Build Check
 on:
   pull_request:
     branches: [main]
+    # `ready_for_review` is not one of the default types (opened, synchronize,
+    # reopened) - without it, the one push that actually matters (draft ->
+    # ready) wouldn't trigger this workflow at all.
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
 
 jobs:
   build:
+    # Sveltia's editorial workflow keeps a PR as a real GitHub draft PR for
+    # as long as the CMS entry's own status is "draft", committing (and thus
+    # re-triggering this workflow via `synchronize`) on every single save -
+    # which would otherwise run a full npm ci + build for every keystroke-
+    # level autosave on a large edit. Skip while still a draft; the
+    # `ready_for_review` transition above re-triggers a real run once the
+    # editor actually asks for review, which is also what gates auto-merge.yml
+    # (it only reacts when this job's conclusion is "success", never
+    # "skipped").
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
