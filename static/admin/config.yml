@@ -16,6 +16,10 @@ backend:
   # direct branch; both land as a normal PR against `main`, reviewed the
   # same way (see .github/workflows/auto-merge.yml).
   open_authoring: true
+  # spad-docs is public, so the narrower scope is enough; without this,
+  # open_authoring makes the CMS ask GitHub for access to ALL of a
+  # contributor's repos including private ones.
+  auth_scope: public_repo
 
 publish_mode: editorial_workflow
 
@@ -36,9 +40,21 @@ collections:
     # folder's README.mdx as that folder's own entry rather than a separate
     # nested doc, matching how Docusaurus already treats README.mdx as a
     # folder's category page.
+    #
+    # subfolders: false is required for our folder shape. Sveltia's default
+    # (subfolders: true) assumes "a folder IS an entry" - every file has its
+    # own child folder, and a folder with no subfolder of its own is treated
+    # as a leaf and dropped from the sidebar tree entirely. Our folders mix
+    # a README.mdx index with sibling page files and, further down, more
+    # subfolders (e.g. docs/guides-and-videos has 5 direct pages plus 2
+    # subfolders) - the classic "files are files, folders are just
+    # containers" shape - which is exactly what subfolders: false is for.
+    # Without it, folders with no child subfolder of their own vanish from
+    # the tree and their pages get hoisted up into the collection root.
     nested:
       depth: 100
       summary: '{{title}}'
+      subfolders: false
     meta:
       path:
         widget: string
