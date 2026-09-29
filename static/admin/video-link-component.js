@@ -5,7 +5,16 @@
 // editor. Decap's markdown widget only understands plain markdown; this
 // pattern/fromBlock/toBlock trio is how it round-trips a custom MDX
 // component through that widget without corrupting it on save. Loaded by
-// admin/index.html before CMS.init() runs.
+// admin/index.html as a plain <script> tag after decap-cms.js, which
+// auto-initializes itself on DOMContentLoaded - registerEditorComponent()
+// just needs to run before that fires, which a synchronous script tag
+// guarantees. Deliberately does NOT call CMS.init() itself: doing so
+// alongside decap-cms.js's own auto-init created a second React root on
+// the same container (React's createRoot() called twice), which is what
+// caused every /admin page load to crash with "NotFoundError: Failed to
+// execute 'removeChild' on 'Node'" - a known class of Decap CMS bug
+// (decaporg/decap-cms#7445 and similar) usually caused by exactly this
+// double-init pattern.
 //
 // The YouTube-ID regex here intentionally mirrors
 // scripts/convert_gitbook_to_mdx.py's YOUTUBE_ID_PATTERN - this file runs
@@ -44,5 +53,3 @@ CMS.registerEditorComponent({
     return `📺 ${obj.title || obj.url || 'YouTube video'}`;
   },
 });
-
-CMS.init();
