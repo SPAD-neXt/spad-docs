@@ -103,6 +103,14 @@ def find_docs_files_recursive(directory):
         print(f"[DEBUG] Found {len(files)} {ext} files with pattern {pattern}")
         all_files.extend(files)
 
+    # SUMMARY.md is GitBook's own table of contents (parsed separately by
+    # parse_summary_positions() to drive the Docusaurus sidebar order) -
+    # it's not a real content page and shouldn't become one.
+    before = len(all_files)
+    all_files = [f for f in all_files if os.path.basename(f) != 'SUMMARY.md']
+    if len(all_files) != before:
+        print("[DEBUG] Excluded SUMMARY.md from conversion (table of contents, not a content page)")
+
     print(f"[DEBUG] Total files found: {len(all_files)}")
     return all_files
 

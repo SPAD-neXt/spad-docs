@@ -66,12 +66,6 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Manual',
-        },
-        {
           href: 'https://github.com/SPAD-neXt/spad-docs',
           label: 'GitHub',
           position: 'right',
