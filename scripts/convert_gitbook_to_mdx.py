@@ -1319,6 +1319,62 @@ def set_frontmatter_field(content, key, value):
     return '\n'.join(lines)
 
 
+def ensure_title_frontmatter(content):
+    """
+    Populate frontmatter `title:` from the page's first H1 heading.
+
+    None of the converted docs ever had a `title:` field - Docusaurus
+    doesn't need one, it falls back to the H1 for both the page title and
+    the sidebar label when no frontmatter title is set. But Decap CMS's
+    `docs` collection uses `summary: '{{title}}'` to label every entry in
+    its file list, and that template only sees frontmatter fields, not the
+    markdown body - with title universally absent, every single entry in
+    Decap's editor rendered as a blank row (confirmed live: not a color or
+    dark-mode contrast bug, there was simply no text for it to show).
+    """
+    if re.search(r'^title:\s*.+$', content, re.MULTILINE):
+        return content
+
+    # Body search starts after any existing frontmatter block, but a block
+    # isn't required to exist yet - plenty of source files have no
+    # frontmatter at all until a later pass (apply_sidebar_order()) adds
+    # `sidebar_position`, and set_frontmatter_field() below already knows
+    # how to create a frontmatter block from scratch when needed. The
+    # earlier version of this function required a block to already exist,
+    # which silently skipped every file without one (confirmed live: any
+    # source .md with no GitBook `description:` field never got a title).
+    lines = content.split('\n')
+    body_start = 0
+    if lines and lines[0].strip() == '---':
+        for i in range(1, len(lines)):
+            if lines[i].strip() == '---':
+                body_start = i + 1
+                break
+
+    # (?!#) excludes H2+ (##, ###, ...); \s* rather than \s+ also catches
+    # the one source file with a missing space after '#' (a malformed but
+    # still clearly-intended H1 in the original GitBook markdown).
+    heading = None
+    for line in lines[body_start:]:
+        match = re.match(r'^#(?!#)\s*(.+?)\s*$', line)
+        if match:
+            heading = match.group(1)
+            break
+    if not heading:
+        return content
+
+    heading = re.sub(r'<br\s*/?>', ' ', heading)
+    heading = re.sub(r'[*_`]', '', heading)
+    heading = re.sub(r'&#x20;', ' ', heading)
+    heading = re.sub(r'&amp;', '&', heading)
+    heading = re.sub(r'\s+', ' ', heading).strip()
+    if not heading:
+        return content
+
+    escaped = heading.replace('\\', '\\\\').replace('"', '\\"')
+    return set_frontmatter_field(content, 'title', f'"{escaped}"')
+
+
 def ensure_site_root_frontmatter(content, output_path):
     """
     docs/README.mdx is this site's home page (docusaurus.config.ts sets
@@ -1571,6 +1627,7 @@ def convert_file(input_file):
     print("[DEBUG] Step 14: Fix frontmatter structure (final)")
     content = fix_frontmatter_structure(content)
 
+    content = ensure_title_frontmatter(content)
     content = ensure_site_root_frontmatter(content, output_path)
 
     print(f"[DEBUG] Output: {output_path} (JSX detected: {has_jsx})")
