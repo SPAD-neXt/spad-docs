@@ -47,3 +47,19 @@
 [class*='admonitionHeading_'] {
   display: none;
 }
+
+/*
+ * docs/README.mdx (slug: '/', the site root) otherwise shows up as its
+ * own row at the bottom of the sidebar on every other page - a link from
+ * the manual back to itself. Hiding it via a custom sidebarItemsGenerator
+ * was tried first, but that also strips the *entire* sidebar specifically
+ * on the '/' page itself: Docusaurus resolves "which sidebar does the
+ * current doc belong to" by looking the doc up inside the generated
+ * sidebar array, and a doc missing from that array (because it was
+ * filtered out) renders with no sidebar at all, not just without its own
+ * row. Hiding the row visually instead leaves the underlying sidebar data
+ * - and therefore every page's sidebar, including '/' itself - intact.
+ */
+nav[aria-label='Docs sidebar'] a.menu__link[href='/'] {
+  display: none;
+}
