@@ -53,6 +53,16 @@ jobs:
               return;
             }
 
+            if (pr.draft) {
+              // Build Check itself skips while a PR is a draft (see build-check.yml), so this is
+              // normally unreachable - but a PR merged into draft-skip support with an
+              // already-"success" run from before that change still triggers this workflow, and
+              // the merge API hard-rejects a draft PR with a 405 ("Pull Request is still a draft"),
+              // failing this whole run. Confirmed live on spad-docs#13.
+              core.info(`PR #${pr.number} is still a draft - leaving it alone.`);
+              return;
+            }
+
             const author = pr.user.login;
             const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
               owner: context.repo.owner,
