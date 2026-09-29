@@ -2,10 +2,15 @@ backend:
   name: github
   repo: SPAD-neXt/spad-docs
   branch: main
-  # Decap appends /auth and /callback to this. The provider itself
-  # (cms-server) runs on the same VM as the site, reverse-proxied under
-  # /oauth/ - see SPAD-Migration serverfarm/pve3/vms/web/cms-server/.
-  base_url: https://docs.spadnext.net/oauth
+  # Decap appends /auth and /callback to this. Must be a bare origin, no
+  # path: decap-cms-lib-auth's netlify-auth.js checks incoming postMessage
+  # events with `e.origin === this.base_url`, and a postMessage event's
+  # `origin` is always scheme+host+port with no path - a base_url with a
+  # path segment can never match, silently breaking every login. The
+  # provider itself (cms-server) runs on the same VM as the site,
+  # reverse-proxied at domain root (/auth, /callback) - see SPAD-Migration
+  # serverfarm/pve3/vms/web/cms-server/.
+  base_url: https://docs.spadnext.net
   auth_endpoint: auth
   # Editors without Write access get an automatic fork + PR instead of a
   # direct branch; both land as a normal PR against `main`, reviewed the
