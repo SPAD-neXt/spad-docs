@@ -1319,21 +1319,32 @@ def set_frontmatter_field(content, key, value):
     return '\n'.join(lines)
 
 
-def ensure_site_root_slug(content, output_path):
+def ensure_site_root_frontmatter(content, output_path):
     """
     docs/README.mdx is this site's home page (docusaurus.config.ts sets
-    `docs.routeBasePath` to '/'), which requires `slug: /` in its
-    frontmatter to actually serve at the site root. Previously this was a
-    one-off manual edit made directly to the generated file, which a full
-    re-run of this script would silently overwrite (regenerating README.mdx
-    from source with no slug, breaking the site root) - so it's asserted
-    here instead, making a re-run idempotent.
+    `docs.routeBasePath` to '/'), which needs some frontmatter a normal doc
+    doesn't:
+      - `slug: /` to actually serve at the site root.
+      - `pagination_prev: null` / `pagination_next: null` to suppress the
+        auto-generated "Previous/Next" footer links. Without an explicit
+        sidebar_position, README sorts last in the sidebar (see
+        apply_sidebar_order()), so Docusaurus was showing a "Previous:
+        Old-Getting-Started-Guide" link at the bottom of the home page -
+        a reading-order artifact that makes no sense on a landing page.
+    Previously these were one-off manual edits made directly to the
+    generated file, which a full re-run of this script would silently
+    overwrite - so they're asserted here instead, making a re-run
+    idempotent.
     """
     if os.path.abspath(output_path) != os.path.join(OUTPUT_ROOT, 'README.mdx'):
         return content
-    if re.search(r'^slug:\s*/\s*$', content, re.MULTILINE):
-        return content
-    return set_frontmatter_field(content, 'slug', '/')
+    if not re.search(r'^slug:\s*/\s*$', content, re.MULTILINE):
+        content = set_frontmatter_field(content, 'slug', '/')
+    if not re.search(r'^pagination_prev:\s*null\s*$', content, re.MULTILINE):
+        content = set_frontmatter_field(content, 'pagination_prev', 'null')
+    if not re.search(r'^pagination_next:\s*null\s*$', content, re.MULTILINE):
+        content = set_frontmatter_field(content, 'pagination_next', 'null')
+    return content
 
 
 def parse_summary_positions(summary_path):
@@ -1560,7 +1571,7 @@ def convert_file(input_file):
     print("[DEBUG] Step 14: Fix frontmatter structure (final)")
     content = fix_frontmatter_structure(content)
 
-    content = ensure_site_root_slug(content, output_path)
+    content = ensure_site_root_frontmatter(content, output_path)
 
     print(f"[DEBUG] Output: {output_path} (JSX detected: {has_jsx})")
 
