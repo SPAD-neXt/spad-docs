@@ -43,6 +43,13 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/',
           editUrl: 'https://github.com/SPAD-neXt/spad-docs/tree/main/',
+          // docs/README.mdx (slug: '/') is the site root - it doesn't need
+          // a self-link back to itself sitting at the bottom of its own
+          // sidebar. Still a fully valid page at '/', just not listed.
+          async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
+            const items = await defaultSidebarItemsGenerator(args);
+            return items.filter((item) => !(item.type === 'doc' && item.id === 'README'));
+          },
         },
         blog: false,
         theme: {
