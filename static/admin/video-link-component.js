@@ -40,8 +40,17 @@ CMS.registerEditorComponent({
     { name: 'url', label: 'YouTube URL', widget: 'string' },
     { name: 'title', label: 'Video Title', widget: 'string' },
   ],
-  // Matches the exact tag shape render_embed_link() emits.
-  pattern: /^<VideoLink id="([^"]*)" title="([^"]*)" \/>$/,
+  // Matches the exact tag shape render_embed_link() emits. The `m` flag is
+  // required: Sveltia's live-preview pane matches `pattern` against the
+  // WHOLE field value in one go (not block-by-block like the editor's own
+  // parser does), so bare ^/$ only ever match a field containing nothing
+  // but this one tag - never true on a real page with surrounding text.
+  // With `m`, ^/$ bind to line boundaries instead, so the component is
+  // found wherever this line occurs. Without it, the preview pane silently
+  // drops the whole element - no thumbnail, no title, nothing - even
+  // though editing/saving still worked fine via the editor's own DOM-based
+  // import path.
+  pattern: /^<VideoLink id="([^"]*)" title="([^"]*)" \/>$/m,
   fromBlock: function (match) {
     return {
       url: `https://youtu.be/${match[1]}`,
