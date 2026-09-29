@@ -2,10 +2,10 @@ backend:
   name: github
   repo: SPAD-neXt/spad-docs
   branch: main
-  # TODO once the self-hosted OAuth provider is deployed (see
-  # SPAD-Migration/spad-docs/README.md, "Decap CMS + auto-deploy
-  # integration plan"): point this at its actual base URL.
-  base_url: https://cms-auth.spadnext.com
+  # Decap appends /auth and /callback to this. The provider itself
+  # (cms-server) runs on the same VM as the site, reverse-proxied under
+  # /oauth/ - see SPAD-Migration serverfarm/pve3/vms/web/cms-server/.
+  base_url: https://docs.spadnext.net/oauth
   auth_endpoint: auth
   # Editors without Write access get an automatic fork + PR instead of a
   # direct branch; both land as a normal PR against `main`, reviewed the
