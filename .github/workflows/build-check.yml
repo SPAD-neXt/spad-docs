@@ -1,0 +1,32 @@
+name: Build Check
+
+# Runs on every PR, including ones from forks (Decap's `open_authoring`
+# workflow opens forked PRs for editors without write access). Uses the
+# default, restricted, read-only GITHUB_TOKEN and never checks out anything
+# beyond the PR's own code - safe to run untrusted content.
+#
+# Configure this as a required status check on `main` in the repo's branch
+# protection settings (Settings -> Branches -> Branch protection rules) so
+# it actually gates merges, including the auto-merge workflow
+# (auto-merge.yml), which waits for this workflow's conclusion.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build

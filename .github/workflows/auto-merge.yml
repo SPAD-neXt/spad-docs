@@ -1,0 +1,76 @@
+name: Auto-merge trusted collaborators
+
+# Merges a PR automatically once its Build Check passed, but only if the PR
+# author has Write permission or higher on this repo (the operator's
+# decision: "Write or higher" counts as a trusted collaborator). Anyone else
+# - including editors using Decap's `open_authoring` fork-based workflow,
+# who by definition don't have write access - gets left alone for a human
+# collaborator to review and merge manually.
+#
+# Deliberately triggered by `workflow_run` (after Build Check finishes)
+# instead of reacting to `pull_request` directly, and deliberately does not
+# check out any PR/fork code itself. This is the standard safe pattern for
+# "take a privileged action based on the result of running untrusted PR
+# code": `workflow_run` always executes using the workflow file from the
+# repo's default branch, and a PR - however malicious - can't use this
+# workflow to grant itself elevated permissions or merge rights by editing
+# auto-merge.yml in its own branch, because that edited copy is never what
+# runs here.
+#
+# `workflow_run`'s own `pull_requests` payload field is only populated for
+# same-repo PRs, not for forks (a known GitHub limitation) - so the
+# associated PR is looked up via the commit-pulls API instead, which works
+# for both.
+
+on:
+  workflow_run:
+    workflows: ["Build Check"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find the PR for this build, check author permission, merge if trusted
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const headSha = context.payload.workflow_run.head_sha;
+
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: headSha,
+            });
+            const pr = prs.find((p) => p.state === 'open');
+            if (!pr) {
+              core.info(`No open PR found for commit ${headSha} - nothing to do.`);
+              return;
+            }
+
+            const author = pr.user.login;
+            const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: author,
+            });
+            core.info(`PR #${pr.number} author ${author} has permission: ${perm.permission}`);
+
+            const trusted = perm.permission === 'admin' || perm.permission === 'write';
+            if (!trusted) {
+              core.info(`${author} is below the Write trust threshold - leaving PR #${pr.number} for manual review.`);
+              return;
+            }
+
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              merge_method: 'squash',
+            });
+            core.info(`Merged PR #${pr.number} (author ${author}, permission ${perm.permission}).`);

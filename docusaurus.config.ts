@@ -14,7 +14,10 @@ const config: Config = {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
   },
 
-  url: 'https://docs.spadnext.com',
+  // Staging domain while Decap CMS + auto-deploy are being built and
+  // tested (see SPAD-Migration/spad-docs/README.md). Switch to
+  // 'https://docs.spadnext.com' at go-live cutover.
+  url: 'https://docs.spadnext.net',
   baseUrl: '/',
 
   organizationName: 'SPAD-neXt',

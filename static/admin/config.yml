@@ -1,0 +1,54 @@
+backend:
+  name: github
+  repo: SPAD-neXt/spad-docs
+  branch: main
+  # TODO once the self-hosted OAuth provider is deployed (see
+  # SPAD-Migration/spad-docs/README.md, "Decap CMS + auto-deploy
+  # integration plan"): point this at its actual base URL.
+  base_url: https://cms-auth.spadnext.com
+  auth_endpoint: auth
+  # Editors without Write access get an automatic fork + PR instead of a
+  # direct branch; both land as a normal PR against `main`, reviewed the
+  # same way (see .github/workflows/auto-merge.yml).
+  open_authoring: true
+
+publish_mode: editorial_workflow
+
+media_folder: static/img/assets
+public_folder: /img/assets
+
+collections:
+  - name: docs
+    label: Documentation
+    label_singular: Doc page
+    folder: docs
+    extension: mdx
+    format: frontmatter
+    create: true
+    delete: true
+    # Recurse into the whole docs/ tree (34 folders deep in places, mirrors
+    # SPAD.next-docs' original GitBook structure). `index_file` treats each
+    # folder's README.mdx as that folder's own entry rather than a separate
+    # nested doc, matching how Docusaurus already treats README.mdx as a
+    # folder's category page.
+    nested:
+      depth: 100
+      summary: '{{title}}'
+    meta:
+      path:
+        widget: string
+        label: Path
+        index_file: README
+    fields:
+      - { label: Title, name: title, widget: string, required: false }
+      - { label: Description, name: description, widget: string, required: false }
+      - label: Sidebar Position
+        name: sidebar_position
+        widget: number
+        required: false
+        hint: >-
+          Controls ordering among sibling pages in this same folder (lower
+          number shows first). Leave empty to sort last. See the docs
+          maintainer guide for how this maps to what you'd drag-and-drop in
+          GitBook.
+      - { label: Body, name: body, widget: markdown }
