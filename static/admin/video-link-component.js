@@ -1,20 +1,24 @@
 // Registers the MDX <VideoLink id=".." title=".." /> component (see
-// scripts/convert_gitbook_to_mdx.py's render_embed_link()) as a Decap
+// scripts/convert_gitbook_to_mdx.py's render_embed_link()) as a custom
 // editor component, so editors get an "Add YouTube video" toolbar button
 // with a URL/title form and a preview - not raw JSX in the markdown
-// editor. Decap's markdown widget only understands plain markdown; this
+// editor. The markdown widget only understands plain markdown; this
 // pattern/fromBlock/toBlock trio is how it round-trips a custom MDX
-// component through that widget without corrupting it on save. Loaded by
-// admin/index.html as a plain <script> tag after decap-cms.js, which
-// auto-initializes itself on DOMContentLoaded - registerEditorComponent()
-// just needs to run before that fires, which a synchronous script tag
-// guarantees. Deliberately does NOT call CMS.init() itself: doing so
-// alongside decap-cms.js's own auto-init created a second React root on
-// the same container (React's createRoot() called twice), which is what
-// caused every /admin page load to crash with "NotFoundError: Failed to
-// execute 'removeChild' on 'Node'" - a known class of Decap CMS bug
-// (decaporg/decap-cms#7445 and similar) usually caused by exactly this
-// double-init pattern.
+// component through that widget without corrupting it on save.
+// CMS.registerEditorComponent() is API-identical between Decap CMS (used
+// originally) and Sveltia CMS (switched to after Decap's beta `nested`
+// folder-collection support broke on this repo's real folder tree), so
+// this file needed no changes for that switch - only admin/index.html's
+// script tag did. Loaded as a plain <script> tag after the CMS bundle,
+// which auto-initializes itself on DOMContentLoaded -
+// registerEditorComponent() just needs to run before that fires, which a
+// synchronous script tag guarantees. Deliberately does NOT call CMS.init()
+// itself: doing so alongside the bundle's own auto-init created a second
+// React root on the same container (React's createRoot() called twice),
+// which is what caused every /admin page load to crash with
+// "NotFoundError: Failed to execute 'removeChild' on 'Node'" under Decap -
+// a known class of bug (decaporg/decap-cms#7445 and similar) usually
+// caused by exactly this double-init pattern.
 //
 // The YouTube-ID regex here intentionally mirrors
 // scripts/convert_gitbook_to_mdx.py's YOUTUBE_ID_PATTERN - this file runs
