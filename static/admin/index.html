@@ -6,7 +6,13 @@
     <title>SPAD.neXt Docs - Content Manager</title>
   </head>
   <body>
-    <script src="https://unpkg.com/decap-cms@^3/dist/decap-cms.js"></script>
+    <!-- Decap CMS's `nested` folder-collection support is beta and broke on
+         this repo's real folder tree (guides-and-videos/* silently vanishing
+         from the entry list, "No Entries" subfolders) - Sveltia CMS is a
+         config-compatible rewrite that fixes that class of bug and keeps our
+         GitHub OAuth backend (cms-server) working unchanged. Its docs
+         explicitly warn against adding type="module" here. -->
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
     <script src="./video-link-component.js"></script>
   </body>
 </html>
