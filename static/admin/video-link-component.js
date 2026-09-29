@@ -53,7 +53,36 @@ CMS.registerEditorComponent({
     const title = (obj.title || '').replace(/"/g, '&quot;');
     return `<VideoLink id="${id}" title="${title}" />`;
   },
+  // A plain DOM element rather than a string, so the editor's live preview
+  // pane shows the actual YouTube thumbnail - matching what editors see on
+  // the real site (src/components/VideoLink/index.tsx) - instead of a bare
+  // "📺 title" text line.
   toPreview: function (obj) {
-    return `📺 ${obj.title || obj.url || 'YouTube video'}`;
+    const id = extractYouTubeId(obj.url);
+    const title = obj.title || obj.url || 'YouTube video';
+
+    const link = document.createElement('a');
+    link.href = id ? `https://youtu.be/${id}` : obj.url || '#';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.style.cssText =
+      'display:flex;align-items:center;gap:12px;text-decoration:none;' +
+      'color:inherit;border:1px solid rgba(128,128,128,0.3);' +
+      'border-radius:8px;padding:8px;max-width:480px;';
+
+    if (id) {
+      const img = document.createElement('img');
+      img.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+      img.alt = title;
+      img.loading = 'lazy';
+      img.style.cssText = 'width:120px;height:auto;border-radius:4px;flex-shrink:0;';
+      link.appendChild(img);
+    }
+
+    const label = document.createElement('span');
+    label.textContent = `📺 ${title}`;
+    link.appendChild(label);
+
+    return link;
   },
 });
