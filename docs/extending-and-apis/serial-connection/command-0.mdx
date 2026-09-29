@@ -1,0 +1,36 @@
+---
+description: General Command ( SPAD.neXt <--> Device) on Channel 0
+---
+
+import Tabs from "@theme/Tabs"
+import TabItem from "@theme/TabItem"
+
+
+
+# Device General Commands
+
+General Command ( SPAD.neXt <--> Device) on Channel 0
+
+
+## &#x20;PING
+
+Every 10 seconds SPAD.neXt will send a PING to the device and expects a PONG in response containing the received TICKET as payload.&#x20;
+
+:::info
+If no PONG is received for longer than 30 seconds, SPAD.neXt assumes the device is offline.
+:::
+
+\
+Request: `0,PING,<TICKET>;`\
+Reply: `0,PONG,<TICKET>;`
+
+## &#x20;END
+
+When SPAD.neXt exits it will send an `0,END;` command to the device, so the device knows SPAD.neXt is exiting. <br/>>
+
+:::danger
+There is no guarantee that this command is sent, and SPAD.neXt will not wait for a reply and close the comunication immediately
+:::
+
+Request: `0,END;`\
+Reply: none
