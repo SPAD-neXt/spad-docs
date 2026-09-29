@@ -46,6 +46,10 @@ collections:
         name: sidebar_position
         widget: number
         required: false
+        # Decap's number widget defaults to integer-only; float allows
+        # decimals like 2.5 to slot a page between existing 2 and 3 without
+        # renumbering every sibling - see the editor guide.
+        value_type: float
         hint: >-
           Controls ordering among sibling pages in this same folder (lower
           number shows first). Leave empty to sort last. See the docs
