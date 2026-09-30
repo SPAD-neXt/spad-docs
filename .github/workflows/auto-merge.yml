@@ -1,11 +1,15 @@
 name: Auto-merge trusted collaborators
 
-# Merges a PR automatically once its Build Check passed, but only if the PR
-# author has Write permission or higher on this repo (the operator's
-# decision: "Write or higher" counts as a trusted collaborator). Anyone else
-# - including editors using Decap's `open_authoring` fork-based workflow,
-# who by definition don't have write access - gets left alone for a human
-# collaborator to review and merge manually.
+# Merges a PR automatically once its Build Check passed, but only if BOTH:
+# - the PR author has Write permission or higher on this repo (the operator's
+#   decision: "Write or higher" counts as a trusted collaborator), and
+# - every changed file is under docs/ or static/img/ - the only paths the CMS
+#   itself ever touches. A trusted author's PR that also touches scripts/,
+#   CSS, workflows, config.yml, etc. always needs a human look; auto-merge
+#   has no way to review the actual diff, only who opened it.
+# Anyone else - including editors using Decap's `open_authoring` fork-based
+# workflow, who by definition don't have write access - gets left alone for a
+# human collaborator to review and merge manually either way.
 #
 # Deliberately triggered by `workflow_run` (after Build Check finishes)
 # instead of reacting to `pull_request` directly, and deliberately does not
@@ -74,6 +78,34 @@ jobs:
             const trusted = perm.permission === 'admin' || perm.permission === 'write';
             if (!trusted) {
               core.info(`${author} is below the Write trust threshold - leaving PR #${pr.number} for manual review.`);
+              return;
+            }
+
+            // Even a trusted author's PR only auto-merges when it is pure content: everything
+            // changed lives under docs/ or static/img/ (what the CMS itself ever touches). Anything
+            // else - scripts/, CSS, workflows, config.yml, etc. - always needs a human look, even
+            // from a Write-access account, since auto-merge has no way to review the actual diff.
+            const ALLOWED_PREFIXES = ['docs/', 'static/img/'];
+            const isAllowedPath = (path) => ALLOWED_PREFIXES.some((prefix) => path.startsWith(prefix));
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+
+            const outOfScope = files.filter(
+              (file) =>
+                !isAllowedPath(file.filename) ||
+                (file.previous_filename && !isAllowedPath(file.previous_filename)),
+            );
+
+            if (outOfScope.length > 0) {
+              core.info(
+                `PR #${pr.number} touches files outside docs/ and static/img/ (${outOfScope
+                  .map((f) => f.filename)
+                  .join(', ')}) - leaving it for manual review even though ${author} is trusted.`,
+              );
               return;
             }
 
