@@ -86,8 +86,8 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/SPAD-neXt/spad-docs',
-          label: 'GitHub',
+          href: 'https://github.com/SPAD-neXt/spad-docs/blob/main/EDITOR_GUIDE.md',
+          label: 'Editor Guide',
           position: 'right',
         },
       ],
