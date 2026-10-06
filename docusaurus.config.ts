@@ -59,7 +59,10 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/',
-          editUrl: 'https://github.com/SPAD-neXt/spad-docs/tree/main/',
+          // No editUrl: the GitHub "Edit this page" link pointed readers at
+          // raw markdown in the repo, bypassing the CMS entirely. Editors
+          // should go through /admin instead - see EDITOR_GUIDE.md, linked
+          // explicitly from the docs instead of this generated link.
         },
         blog: false,
         theme: {
