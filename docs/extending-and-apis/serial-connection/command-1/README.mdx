@@ -24,7 +24,7 @@ The subcommand `ADD` informs SPAD.neXt about a data value the device will provid
 \
 &#x20;`1,ADD,<CHANNELID>,<path>,<valuetype>,<access>,<name>[[,description][,options]];`
 
-<table><thead><tr><th width="177.24106344373394">Parameter</th><th width="345.85251798561154">Description</th><th>Limits</th></tr></thead><tbody><tr><td><code>&#x3C;CHANNELID></code></td><td>the Channel the device/SPAD.neXt will use to send updates for that data</td><td>>= 10</td></tr><tr><td>&#x3C;path></td><td> name of the data value. <br/>To place it in a tree "//" can be used to separate the nodes. e.g. <code>buttons//button1</code> (<strong>note the escaped "/" !!</strong><br/>If using CmdMessenger-Lib the escaping will be done automatically for you)</td><td>name must not start with /</td></tr><tr><td>&#x3C;valuetype></td><td>type of the data (<strong>S</strong>igned/<strong>U</strong>nsigned)</td><td><code>S8 S16 S32 S64 U8 U16 U32 U64 FLT32 FLT64 ASCIIZ</code></td></tr><tr><td>&#x3C;acces></td><td><strong>RO</strong> for readonly, <strong>RW</strong> for readwrite</td><td></td></tr><tr><td>&#x3C;name></td><td>human readable name of the data for the UI</td><td></td></tr><tr><td>&#x3C;description></td><td>optional description for the UI</td><td></td></tr></tbody></table>
+<table><thead><tr><th width="177.24106344373394">Parameter</th><th width="345.85251798561154">Description</th><th>Limits</th></tr></thead><tbody><tr><td><code>&#x3C;CHANNELID></code></td><td>the Channel the device/SPAD.neXt will use to send updates for that data</td><td>>= 10</td></tr><tr><td>&#x3C;path></td><td> name of the data value. <br/>To place it in a tree "//" can be used to separate the nodes. e.g. <code>buttons//button1</code> (<strong>note the escaped "/" !!</strong><br/>If using CmdMessenger-Lib the escaping will be done automatically for you)</td><td>name must not start with /</td></tr><tr><td>&#x3C;valuetype></td><td>type of the data (<strong>S</strong>igned/<strong>U</strong>nsigned)</td><td><code>S8 S16 S32 S64 U8 U16 U32 U64 FLT32 FLT64 ASCIIZ</code></td></tr><tr><td>&#x3C;access></td><td><strong>RO</strong> for readonly, <strong>RW</strong> for readwrite</td><td></td></tr><tr><td>&#x3C;name></td><td>human readable name of the data for the UI</td><td></td></tr><tr><td>&#x3C;description></td><td>optional description for the UI</td><td></td></tr></tbody></table>
 
 #### Supported options
 
@@ -46,7 +46,7 @@ SPAD.neXt will send data updates to the device and expect data using the given C
 
 ### Examples
 
-#### Persitent Device Variable
+#### Persistent Device Variable
 
 `1,ADD,11,pages//activepage,U8,RW,Active device page,My cool description,PERSIST=1;`
 
@@ -59,7 +59,7 @@ creates a variable `DEVICE:VID/PID/pages/activepage` available only within the d
 creates a variable `LOCAL:VID/PID/SERIAL/pages/activepage` available to all deviceprofiles within SPAD.neXt
 
 :::danger
-DEVICE variables are persitent per connected devices and the values will be loaded and saved from/to the profile. &#x20;
+DEVICE variables persist for each connected device. Their values are loaded from and saved to the profile.&#x20;
 
 LOCAL variables will not be saved and default to 0&#x20;
 :::
@@ -96,7 +96,7 @@ You can get the internal name of a data value, by selecting it in the data brows
 The subcommand `UNSUBSCRIBE` will unsubscribe from a previously subscribed data value\
 Syntax: `1,UNSUBSCRIBE,<index>;`
 
-## Emulate an event on a diffrent device
+## Emulate an event on a different device
 
 The subcommand `EMULATE` will emulate an event from another device. (E.g. a dial turned on radio panel)<br/>
 

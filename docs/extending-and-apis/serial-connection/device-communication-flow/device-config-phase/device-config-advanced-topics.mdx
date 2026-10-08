@@ -78,7 +78,7 @@ But back to the example, now create the 2 additional input buttons  (simple ones
 `0,INPUT,8,I_HDG_PULL,PUSHBUTTON,SPAD_SIMPLEBUTTON,HIDDEN=1,ROUTETO=E_HDG,ROUTETO.PRESS=PULL_PRESS,ROUTETO.RELEASE=IGNORE;`
 
 :::warning
-Note that the INHERIT for the button are ommited, to prevent SPAD.neXt to add any default events to the buttons.
+Note that `INHERIT` is omitted for the button to prevent SPAD.neXt from adding default events to it.
 :::
 
 For the pull-button SPAD.neXt is instructed to ignore the release event and only support the push event. The value "IGNORE" can also be omitted which will have the same effect.

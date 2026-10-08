@@ -12,7 +12,7 @@ The scripting interface is C#6.0 compatible.
 You can check the DemoScript provided.
 
 Basically you create Classes in a .cs-File for the needed Purposes.\
-To ease development it's recommended to use a C#-IDE to develop the Scripts. (e.g. VS 2015 Community edition (free)). Just create a new C#-Class-Library Project and Reference the Assembly "SPAD.Interfaces.dll" from the SPAD.neXt Binaries or Inlcude the Interface-Project from github. (You will need to create your own signing key) This way you will get Intellisense and can test-compile your script.
+To ease development it's recommended to use a C#-IDE to develop the Scripts. (e.g. VS 2015 Community edition (free)). Just create a new C#-Class-Library Project and Reference the Assembly "SPAD.Interfaces.dll" from the SPAD.neXt Binaries or Include the Interface-Project from github. (You will need to create your own signing key) This way you will get Intellisense and can test-compile your script.
 
 All classes that derive from IScript somehow will be considered by SPAD.neXt.\
 Classes that inherit IScriptPrivate will never be called by SPAD.neXt
@@ -28,7 +28,7 @@ Additional Interfaces that you can implement:
 IScriptCreation\
 Class supports Initialization/Deinitialization. E.g. if you want to initialize/store some stuff Initialize will be called when the object is instantiated , Deinitialize before the object is Disposed.
 
-IScriptActivation (only suitable for Onjects that also implement IScriptAction)\
+IScriptActivation (only suitable for Objects that also implement IScriptAction)\
 Class supports activation/deactivation.\
 Activate will be called when an event using this Action is activated in a profile Deactivate will be called when an event using this Action is deactivated in a profile
 
@@ -47,10 +47,10 @@ The LogFormat-String is "$&#123;longdate&#125;|$&#123;level&#125;|$&#123;threadi
 
 To work with Data from the Sim/SPAD.neXt the global [Eventsystem](https://github.com/c0nnex/SPAD.neXt/blob/master/SPAD.Interfaces/Events/IEventSystem.cs)-Object is the key.
 
-using "EventSystem.GetDataDefinition" you grab a [IDatadefiniton](https://github.com/c0nnex/SPAD.neXt/blob/master/SPAD.Interfaces/Configuration/IDataDefinition.cs) from SPAD.neXt and can read or manipulate the Values. This also will makes sure that your script will be called when the data changes.
+using "EventSystem.GetDataDefinition" you grab a [IDataDefinition](https://github.com/c0nnex/SPAD.neXt/blob/master/SPAD.Interfaces/Configuration/IDataDefinition.cs) from SPAD.neXt and can read or manipulate the Values. This also will makes sure that your script will be called when the data changes.
 
 It's a bit try and error right now, but all interfaces exposed in the SPAD.Interfaces Assembly are usable and working.\
 (SPAD.neXt uses them itself for all Panels etc)\
 Inline-Documentation for the Interfaces will be added over time, as it is needed
 
-Just playaround a bit. If you need some help getting started, open an issue, describe what you want to do and I'll try to help you :-D
+Just play around a bit. If you need some help getting started, open an issue, describe what you want to do and I'll try to help you :-D

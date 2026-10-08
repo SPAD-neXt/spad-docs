@@ -25,7 +25,7 @@ Add a vDeck in Settings->Devices->Virtual Devices
 * It behaves exactly like a streamdeck
 * Click on the detach button to open it as a web device
 * For remote access open "http://`ipofSPAD`:28001/VDCK0001.html" in a browser
-* Note: `ipofSPAD` is the IP address the computer running spad is on.  This is not 127.0.0.1 that is the localhost ip address only accessible to applicaitons running locally on the machine
+* Note: `ipofSPAD` is the IP address of the computer running SPAD.neXt. It is not `127.0.0.1`, the localhost address, which is only accessible to applications running on that computer.
 
 #### How to Find PC IP - Command Prompt
 
@@ -40,12 +40,12 @@ Add a vDeck in Settings->Devices->Virtual Devices
 
 (Current vDeck version: 6 )
 
-* you can customize the webinterface by editing Documents/SPAD.neXt/html/VDCK0001.html
-* if you customize the html or global css (vdck.css) and want to prevent spad overwriting your changes create a file "VDCK0001.html.disableUpdates"/"vdck.css.disableUpdates". Be aware that this might break functionallity in future updates.
-* each vDeck has it's own additional VDECKXXXX.css for customizing. See the corresponding file for a detailed description
-* if the html contains an element with id "spad-pagename" its content will be set to the name of the current page
-* if the html contains an element with id "spad-profilename" its content will be set to the name of the current profile
-* the title of the page will be automatically set to "Profilename / Pagename"
+* You can customize the web interface by editing `Documents/SPAD.neXt/html/VDCK0001.html`.
+* If you customize the HTML or global CSS (`vdck.css`) and want to prevent SPAD.neXt from overwriting your changes, create a file named `VDCK0001.html.disableUpdates` or `vdck.css.disableUpdates`. Be aware that this may break functionality in future updates.
+* Each vDeck has its own additional `VDECKXXXX.css` file for customization. See the corresponding file for details.
+* If the HTML contains an element with the ID `spad-pagename`, its content will be set to the current page name.
+* If the HTML contains an element with the ID `spad-profilename`, its content will be set to the current profile name.
+* The page title is automatically set to `Profilename / Pagename`.
 
 ## Double events on older touch devices
 

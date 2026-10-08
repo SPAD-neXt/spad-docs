@@ -18,11 +18,11 @@ Select the appropriate Port and Protocol. For some protocols (e.g. VRInsight) no
 
 ### Speed
 
-If you notice grabage being sent/received then lower the speed. For an USB2Serial device 115200 is usually a good choice, but if the device is too slow to handle this speed, lower it.
+If you notice garbage being sent/received then lower the speed. For an USB2Serial device 115200 is usually a good choice, but if the device is too slow to handle this speed, lower it.
 
 ### Enable DTR
 
-Data Terminal Ready - It telsl the device that something is connected to it's serial port.\
+Data Terminal Ready - It tells the device that something is connected to it's serial port.\
 This should be ON in most of the cases.
 
 :::warning
@@ -50,6 +50,6 @@ If that happens, set this wakeup time. You might need to experiment with the set
 ### Access to ComPort denied
 
 If you get "Access to ComX is denied" error when starting SPAD.neXt after a fresh computer reboot with a serial device, this is most likely because you have Skype/Teams or the Arduino IDE running. Serial devices are sometimes recognized as audiodevices and locked by skype/teams for unknown reason.\
-(Same can appliy to other software locking up the port)
+(Same can apply to other software locking up the port)
 
 **Solution**: Unplug serial usb and replug it, this will release the lock on it.
