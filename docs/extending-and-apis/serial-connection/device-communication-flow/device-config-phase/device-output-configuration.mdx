@@ -20,7 +20,7 @@ For defining an output descriptor the following command syntax is used:
 0,OUTPUT,<DeviceIndex>,<Tag>,<Type>,<Inherits>[,<Option>=<Value>,...];
 ```
 
-\<DeviceIndex> is the numercial index the output should be used by SPAD when sending updates to the device (See [LED](../../device-led-update-channel-6) / [DISPLAY ](../../device-display-update-channel-7)update   ). For Led commonly the pin on the device can be used as \<DeviceIndex>. This way no more internal processing needs to be done on the device. \
+\<DeviceIndex> is the numerical index the output should be used by SPAD when sending updates to the device (See [LED](../../device-led-update-channel-6) / [DISPLAY ](../../device-display-update-channel-7)update   ). For Led commonly the pin on the device can be used as \<DeviceIndex>. This way no more internal processing needs to be done on the device. \
 The \<DeviceIndex> should be unique per \<Type>
 
 \<Tag> being the internal name SPAD.neXt should use for events bound to that output descriptor. \<Tag>'s must be unique device wide. It's generally a good idea to give the \<TAG> a prefix (e.g. `L_` for led and `D_` for Displays)
@@ -71,7 +71,7 @@ A led is a simple output descriptor that always has at least the state ON or OFF
 
 ## Device output DISPLAY
 
-A display is any kind of alphanumerical output. It can e.g. be a 7-Segemnt lcd or a complex display with 5 rows of 20 characters each
+A display is any kind of alphanumerical output. It can e.g. be a 7-Segment lcd or a complex display with 5 rows of 20 characters each
 
 The only available \<Inherits> for a display is
 
@@ -79,7 +79,7 @@ The only available \<Inherits> for a display is
 
 All configuration is done via the options:
 
-<table><thead><tr><th width="269.3333333333333">Option</th><th width="223.50597609561754">Value</th><th>Description</th></tr></thead><tbody><tr><td>LENGTH</td><td>integer</td><td>Length of each row in characters</td></tr><tr><td>ROWS</td><td>integer</td><td>number of rows</td></tr><tr><td>SEGMENTS</td><td>integer</td><td>number of segements per row. Each segments will be LENGTH/SEGEMENTS width (Default: 0)</td></tr><tr><td>DEFAULT</td><td>any</td><td>Default value to display</td></tr><tr><td>NOPADDING</td><td>0|1</td><td>Disable padding and aligment of output values</td></tr><tr><td>NOSEGMENTROWEVENTS</td><td>0|1</td><td>SPAD will only send updates per row, not per segment</td></tr><tr><td>SEGMENTALIGN</td><td>LEFT|RIGHT (... per segment)</td><td>Alignment of segment value (Default: Right)</td></tr><tr><td>TEXTALIGN</td><td>LEFT|RIGHT</td><td>Aligment of row (Default: right)</td></tr><tr><td><code>FONT</code></td><td>string</td><td>Name of the font to use (Default: Builtin LCD Font)</td></tr><tr><td>FOREGROUND</td><td>#RRGGBB</td><td>Forground color (Default: Blue #FFF0F8)</td></tr><tr><td>BACKGROUND</td><td>#RRGGBB</td><td>Background color (Default: Black #000000)</td></tr><tr><td>FONTSIZE</td><td>number</td><td>Size of the UI font (Default: Height of one display row)</td></tr><tr><td>HEIGHT</td><td>number</td><td>Height of display in pixels (UI)</td></tr><tr><td>WIDTH</td><td>number</td><td>Width of display in pixels (UI)</td></tr></tbody></table>
+<table><thead><tr><th width="269.3333333333333">Option</th><th width="223.50597609561754">Value</th><th>Description</th></tr></thead><tbody><tr><td>LENGTH</td><td>integer</td><td>Length of each row in characters</td></tr><tr><td>ROWS</td><td>integer</td><td>number of rows</td></tr><tr><td>SEGMENTS</td><td>integer</td><td>number of segments per row. Each segments will be LENGTH/SEGMENTS width (Default: 0)</td></tr><tr><td>DEFAULT</td><td>any</td><td>Default value to display</td></tr><tr><td>NOPADDING</td><td>0|1</td><td>Disable padding and alignment of output values</td></tr><tr><td>NOSEGMENTROWEVENTS</td><td>0|1</td><td>SPAD will only send updates per row, not per segment</td></tr><tr><td>SEGMENTALIGN</td><td>LEFT|RIGHT (... per segment)</td><td>Alignment of segment value (Default: Right)</td></tr><tr><td>TEXTALIGN</td><td>LEFT|RIGHT</td><td>alignment of row (Default: right)</td></tr><tr><td><code>FONT</code></td><td>string</td><td>Name of the font to use (Default: Builtin LCD Font)</td></tr><tr><td>FOREGROUND</td><td>#RRGGBB</td><td>Foreground color (Default: Blue #FFF0F8)</td></tr><tr><td>BACKGROUND</td><td>#RRGGBB</td><td>Background color (Default: Black #000000)</td></tr><tr><td>FONTSIZE</td><td>number</td><td>Size of the UI font (Default: Height of one display row)</td></tr><tr><td>HEIGHT</td><td>number</td><td>Height of display in pixels (UI)</td></tr><tr><td>WIDTH</td><td>number</td><td>Width of display in pixels (UI)</td></tr></tbody></table>
 
 Examples
 
@@ -89,7 +89,7 @@ Examples
 
 `0,OUTPUT,1,D_1,DISPLAY,SPAD_DISPLAY,LENGTH=15,ROWS=3,WIDTH=350,HEIGHT=120`
 
-![3 rows woth 15 chars each](/img/assets/Serial_Display_2.png)
+![3 rows with 15 chars each](/img/assets/Serial_Display_2.png)
 
 `0,OUTPUT,1,D_1,DISPLAY,SPAD_DISPLAY,LENGTH=24,ROWS=12,WIDTH=400,HEIGHT=300,FONTSIZE=16`
 
@@ -97,4 +97,4 @@ Examples
 
 ### Other outputs
 
-Forany other kind of output (e.g. a servo) no output needs to be defined. Just provide a RW-data for the output using the [ADD](../../command-1/#subcommand-add) command and act on the device accordingly to changes to that data
+For any other kind of output (e.g. a servo) no output needs to be defined. Just provide a RW-data for the output using the [ADD](../../command-1/#subcommand-add) command and act on the device accordingly to changes to that data
