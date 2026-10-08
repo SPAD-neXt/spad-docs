@@ -3,10 +3,12 @@ name: Auto-merge trusted collaborators
 # Merges a PR automatically once its Build Check passed, but only if BOTH:
 # - the PR author has Write permission or higher on this repo (the operator's
 #   decision: "Write or higher" counts as a trusted collaborator), and
-# - every changed file is under docs/ or static/img/ - the only paths the CMS
-#   itself ever touches. A trusted author's PR that also touches scripts/,
-#   CSS, workflows, config.yml, etc. always needs a human look; auto-merge
-#   has no way to review the actual diff, only who opened it.
+# - every changed file is under docs/ or static/img/ (the only paths the CMS
+#   itself ever touches) or is exactly static/spad-next-manual.pdf (the
+#   weekly PDF export cron job's one output file). A trusted author's PR that
+#   also touches scripts/, CSS, workflows, config.yml, etc. always needs a
+#   human look; auto-merge has no way to review the actual diff, only who
+#   opened it.
 # Anyone else - including editors using Decap's `open_authoring` fork-based
 # workflow, who by definition don't have write access - gets left alone for a
 # human collaborator to review and merge manually either way.
@@ -82,11 +84,18 @@ jobs:
             }
 
             // Even a trusted author's PR only auto-merges when it is pure content: everything
-            // changed lives under docs/ or static/img/ (what the CMS itself ever touches). Anything
-            // else - scripts/, CSS, workflows, config.yml, etc. - always needs a human look, even
-            // from a Write-access account, since auto-merge has no way to review the actual diff.
+            // changed lives under docs/ or static/img/ (what the CMS itself ever touches), or is
+            // the one generated PDF export file. Anything else - scripts/, CSS, workflows,
+            // config.yml, etc. - always needs a human look, even from a Write-access account, since
+            // auto-merge has no way to review the actual diff.
             const ALLOWED_PREFIXES = ['docs/', 'static/img/'];
-            const isAllowedPath = (path) => ALLOWED_PREFIXES.some((prefix) => path.startsWith(prefix));
+            // Exact file, not a prefix: the weekly PDF export cron job (vm-mgmt, see
+            // SPAD-Migration serverfarm/pve1/vms/vm-mgmt/) commits only this one path - a prefix
+            // like `static/` would also wave through any other file dropped under it.
+            const ALLOWED_EXACT_PATHS = ['static/spad-next-manual.pdf'];
+            const isAllowedPath = (path) =>
+              ALLOWED_PREFIXES.some((prefix) => path.startsWith(prefix)) ||
+              ALLOWED_EXACT_PATHS.includes(path);
 
             const files = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
