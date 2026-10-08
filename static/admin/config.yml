@@ -10,7 +10,16 @@ backend:
   # provider itself (cms-server) runs on the same VM as the site,
   # reverse-proxied at domain root (/auth, /callback) - see SPAD-Migration
   # serverfarm/pve3/vms/web/cms-server/.
-  base_url: https://docs.spadnext.net
+  #
+  # Must match whatever the GitHub OAuth App has registered as its
+  # Authorization callback URL (GitHub falls back to that exact value as
+  # the redirect_uri since cms-server doesn't pass one explicitly) - the
+  # two were updated together at the docs.spadnext.com go-live cutover
+  # (2026-10-08). Changing this value again later requires updating the
+  # OAuth App's Homepage URL and callback URL to match, or login breaks
+  # silently (confirmed live once already, see SPAD-Migration
+  # spad-docs/README.md's OAuth debugging section).
+  base_url: https://docs.spadnext.com
   auth_endpoint: auth
   # Editors without Write access get an automatic fork + PR instead of a
   # direct branch; both land as a normal PR against `main`, reviewed the
