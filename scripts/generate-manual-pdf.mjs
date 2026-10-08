@@ -15,7 +15,7 @@
 //
 // Usage:
 //   node scripts/generate-manual-pdf.mjs --docsDir=./build --out=./build/spad-next-manual.pdf
-//   node scripts/generate-manual-pdf.mjs --baseUrl=https://docs.spadnext.net --out=./spad-next-manual.pdf
+//   node scripts/generate-manual-pdf.mjs --baseUrl=https://docs.spadnext.com --out=./spad-next-manual.pdf
 //
 // Why a custom script instead of just the `docs-to-pdf` CLI:
 //

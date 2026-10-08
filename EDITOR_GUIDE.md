@@ -1,6 +1,6 @@
 # Editing the SPAD.neXt documentation
 
-*A guide for people who write and maintain the docs at docs.spadnext.com/docs.spadnext.net — no coding knowledge needed.*
+*A guide for people who write and maintain the docs at docs.spadnext.com — no coding knowledge needed.*
 
 This replaces the old GitBook editor. It works differently in a few ways
 (explained below), but editing text, adding images and adding videos is
@@ -10,8 +10,7 @@ just as easy as before.
 
 ## 1. Logging in
 
-1. Go to **[docs.spadnext.net/admin](https://docs.spadnext.net/admin/)**
-   (this will become docs.spadnext.com/admin once the site goes fully live).
+1. Go to **[docs.spadnext.com/admin](https://docs.spadnext.com/admin/)**.
 2. Click **Login with GitHub**.
 3. A popup window opens asking you to sign in to GitHub (if you're not
    already) and approve access. Approve it.
