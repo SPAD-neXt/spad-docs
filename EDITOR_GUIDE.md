@@ -132,7 +132,32 @@ get the order you want.
 
 ---
 
-## 5. If something goes wrong
+## 5. Moving or renaming a page
+
+To put a page into a different folder, or to rename it, change its **Path**
+field (shown at the top of the editor):
+
+1. Open the page and edit **Path**, e.g. from `guides-and-videos/my-page` to
+   `other-folder/my-page`.
+2. Save. The page is created at the new location and removed from the old
+   one, as a normal draft/pull request like any other change. It only
+   becomes visible on the live site once it is published.
+3. Pages that are a folder's own index (`README`) use the folder path, so
+   they move the whole folder. Try this on a draft first and check that the
+   sub-pages come along.
+
+After moving a page:
+
+- **Links to it are not updated automatically.** Search the other pages for
+  the old path and fix those links.
+- **The old URL will show a 404** unless a redirect is set up. Ask a
+  developer if the old address was widely shared.
+- Set **Sidebar Position** again if the page should appear at a specific
+  place in its new folder (see section 4).
+
+---
+
+## 6. If something goes wrong
 
 - **Your change doesn't show up on the live site after a while:** check
   the Workflow board (see above) — it might be waiting on a review, or the
@@ -156,6 +181,7 @@ get the order you want.
 | Add a new page | Open the folder, **New Doc page**, fill in Title + content, Save |
 | Add a YouTube video | Toolbar block/plugin icon → **YouTube Video** → paste URL + title |
 | Actually publish my saved change | Move it out of **Draft** (status control, or drag its card on the **Workflow** board) |
+| Move a page to another folder / rename it | Change the **Path** field, Save (then fix links to the old path) |
 | Move a page up/down in its folder | Lower **Sidebar Position** number = higher up |
 | Insert a page between two others | Use a decimal, e.g. `2.5` between `2` and `3` |
 | Check if my change is live yet | **Workflow** tab in the left sidebar |
