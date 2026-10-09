@@ -27,6 +27,12 @@ name: Auto-merge trusted collaborators
 # same-repo PRs, not for forks (a known GitHub limitation) - so the
 # associated PR is looked up via the commit-pulls API instead, which works
 # for both.
+#
+# Whenever a PR is NOT auto-merged (failed build, author below Write, files
+# outside the allowed paths) the workflow leaves one comment on the PR saying
+# why, so it shows up in notifications/tracking. The comment carries a hidden
+# marker and is updated in place on later runs instead of piling up; it is
+# deleted again right before a merge.
 
 on:
   workflow_run:
@@ -39,7 +45,6 @@ permissions:
 
 jobs:
   auto-merge:
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Find the PR for this build, check author permission, merge if trusted
@@ -47,6 +52,11 @@ jobs:
         with:
           script: |
             const headSha = context.payload.workflow_run.head_sha;
+            const conclusion = context.payload.workflow_run.conclusion;
+            if (conclusion !== 'success' && conclusion !== 'failure' && conclusion !== 'timed_out') {
+              core.info(`Build Check concluded '${conclusion}' - nothing to do.`);
+              return;
+            }
 
             const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: context.repo.owner,
@@ -59,6 +69,38 @@ jobs:
               return;
             }
 
+            const MARKER = '<!-- auto-merge-status -->';
+            const findStatusComment = async () => {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+              });
+              return comments.find((c) => c.body && c.body.includes(MARKER));
+            };
+            const notifyNotMerged = async (reason) => {
+              core.info(`PR #${pr.number} not auto-merged: ${reason}`);
+              const body = `${MARKER}\n**Not auto-merged:** ${reason}\n\nThis PR needs a manual review and merge.`;
+              const existing = await findStatusComment();
+              if (existing) {
+                if (existing.body !== body) {
+                  await github.rest.issues.updateComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: existing.id,
+                    body,
+                  });
+                }
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body,
+                });
+              }
+            };
+
             if (pr.draft) {
               // Build Check itself skips while a PR is a draft (see build-check.yml), so this is
               // normally unreachable - but a PR merged into draft-skip support with an
@@ -66,6 +108,11 @@ jobs:
               // the merge API hard-rejects a draft PR with a 405 ("Pull Request is still a draft"),
               // failing this whole run. Confirmed live on spad-docs#13.
               core.info(`PR #${pr.number} is still a draft - leaving it alone.`);
+              return;
+            }
+
+            if (conclusion !== 'success') {
+              await notifyNotMerged(`the Build Check ${conclusion === 'failure' ? 'failed' : 'timed out'}.`);
               return;
             }
 
@@ -79,7 +126,7 @@ jobs:
 
             const trusted = perm.permission === 'admin' || perm.permission === 'write';
             if (!trusted) {
-              core.info(`${author} is below the Write trust threshold - leaving PR #${pr.number} for manual review.`);
+              await notifyNotMerged(`the author ${author} has no Write access to this repo.`);
               return;
             }
 
@@ -110,12 +157,21 @@ jobs:
             );
 
             if (outOfScope.length > 0) {
-              core.info(
-                `PR #${pr.number} touches files outside docs/ and static/img/ (${outOfScope
-                  .map((f) => f.filename)
-                  .join(', ')}) - leaving it for manual review even though ${author} is trusted.`,
+              await notifyNotMerged(
+                `the PR changes files outside docs/ and static/img/: ${outOfScope
+                  .map((f) => `\`${f.filename}\``)
+                  .join(', ')}.`,
               );
               return;
+            }
+
+            const stale = await findStatusComment();
+            if (stale) {
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: stale.id,
+              });
             }
 
             await github.rest.pulls.merge({
