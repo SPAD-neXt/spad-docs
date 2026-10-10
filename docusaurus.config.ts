@@ -73,8 +73,8 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    // Used as og:image/twitter:image (Discord, Slack, etc. link previews)
+    image: 'img/spad-social-card.jpg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
