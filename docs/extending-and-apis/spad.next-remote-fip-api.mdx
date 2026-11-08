@@ -1,0 +1,442 @@
+---
+title: SPAD.neXt Remote FIP API
+description: ''
+sidebar_position: null
+---
+
+import Tabs from "@theme/Tabs"
+import TabItem from "@theme/TabItem"
+
+# SPAD.neXt Remote FIP API (`/MANAGE`): Developer Guide
+
+The `/MANAGE` API lets your program take full control of a Logitech/Saitek **Flight Instrument Panel (FIP)**
+that is connected to a PC running SPAD.neXt. Your program can:
+
+- draw its own images on the FIP screen (320 × 240 pixels),
+- switch the LEDs of the soft buttons on and off,
+- receive button presses and dial turns.
+
+The API is a WebSocket connection with short text messages plus binary frames for images.
+
+:::warning
+API is subject to change in SPAD.neXt 26.11 ff.
+:::
+
+## Contents
+
+1. [Requirements](#1-requirements)
+2. [Connecting](#2-connecting)
+3. [Message format](#3-message-format)
+4. [Step 1: Get the device list (`connect`)](#4-step-1-get-the-device-list-connect)
+5. [Step 2: Take control of a FIP (`select`)](#5-step-2-take-control-of-a-fip-select)
+6. [Sending images](#6-sending-images)
+7. [Switching button LEDs (`ledchange`)](#7-switching-button-leds-ledchange)
+8. [Receiving button and dial events](#8-receiving-button-and-dial-events)
+9. [Errors](#9-errors)
+10. [Behavior you need to know](#10-behavior-you-need-to-know)
+11. [Complete example (Python)](#11-complete-example-python)
+12. [Quick reference](#12-quick-reference)
+
+## 1. Requirements
+
+- SPAD.neXt is running and at least one FIP is connected and shown in SPAD.neXt.
+- The SPAD.neXt web API is enabled (it is enabled by default).
+- Your program can reach the SPAD.neXt PC on the web API port (default **28001**, TCP).
+  If your program runs on another PC, allow that port in the Windows firewall of the SPAD.neXt PC.
+
+> **Security:** the API has **no authentication**. Anyone who can reach the port can take control of the FIPs.
+> Only use it on a network you trust, and do not forward the port to the internet.
+
+## 2. Connecting
+
+Open a WebSocket connection to:
+
+```
+ws://<spad-pc>:28001/MANAGE
+```
+
+- `<spad-pc>`: host name or IP address of the PC running SPAD.neXt (`localhost` on the same PC).
+- `28001`: the default web API port. If it was changed in SPAD.neXt, use that port.
+- The path is not case-sensitive (`/manage` works too).
+- No WebSocket subprotocol and no extra headers are needed.
+- Plain `ws://` only, no TLS.
+
+Each connection is its own session. The FIP you select belongs to that connection.
+
+## 3. Message format
+
+### Text messages
+
+All text messages have the form
+
+```
+<type>:<payload>
+```
+
+`<type>` is the part before the first colon (not case-sensitive), `<payload>` is everything after it.
+
+| Direction | Type | Payload |
+|---|---|---|
+| you → SPAD | `connect` | empty |
+| you → SPAD | `command` | JSON object |
+| SPAD → you | `connect` | JSON object (device list) |
+| SPAD → you | `msg` | plain text information |
+| SPAD → you | `error` | plain text error description |
+| SPAD → you | `event` | JSON object (button/dial event) |
+
+Commands look like this:
+
+```
+command:{"Command":"<name>", ...}
+```
+
+Command names are not case-sensitive.
+
+### Binary messages
+
+Binary messages are only used to **send images** to the FIP (see [section 6](#6-sending-images)).
+SPAD.neXt never sends binary messages to you.
+
+### Replies
+
+Most commands get **no reply when they succeed**. You only get a message when something goes wrong (`error:`).
+The exceptions are `connect` and `select`, which always answer.
+
+## 4. Step 1: Get the device list (`connect`)
+
+Send:
+
+```
+connect:
+```
+
+SPAD.neXt replies with:
+
+```
+connect:{"Version":"…","ApiVersion":"2.0.0.0","HardwareID":"…","License":"…","Devices":[…]}
+```
+
+| Field | Type | Meaning |
+|---|---|---|
+| `Version` | string | SPAD.neXt version |
+| `ApiVersion` | string | Version of the remote API |
+| `HardwareID` | string | Hardware ID of the SPAD.neXt license |
+| `License` | string | License type |
+| `Devices` | array | One entry per connected FIP |
+
+Each entry in `Devices`:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `ID` | string (GUID) | **The ID you need for `select`** |
+| `Serial` | string | Serial number of the FIP |
+| `DeviceType` | number | Always `1` (FIP) |
+| `DeviceData` | object | Not used, ignore |
+| `DeviceSetupEvents` | array | Not needed for this API, ignore |
+
+Example:
+
+```json
+{
+  "Version": "…",
+  "ApiVersion": "2.0.0.0",
+  "HardwareID": "…",
+  "License": "…",
+  "Devices": [
+    {
+      "ID": "3f2c8a51-0b7e-4c1a-9d2e-5a6b7c8d9e0f",
+      "Serial": "…",
+      "DeviceType": 1,
+      "DeviceData": {},
+      "DeviceSetupEvents": []
+    }
+  ]
+}
+```
+
+If `Devices` is empty, no FIP is connected.
+
+Fields that have no value can be missing from the JSON. Your parser should not require them.
+
+## 5. Step 2: Take control of a FIP (`select`)
+
+Send the `ID` from the device list:
+
+```
+command:{"Command":"select","Data":"3f2c8a51-0b7e-4c1a-9d2e-5a6b7c8d9e0f"}
+```
+
+On success SPAD.neXt replies:
+
+```
+msg:device '3f2c8a51-0b7e-4c1a-9d2e-5a6b7c8d9e0f' selected
+```
+
+From now on:
+
+- SPAD.neXt stops drawing its own gauges on that FIP. The screen shows what you send.
+- You receive the button and dial events of that FIP ([section 8](#8-receiving-button-and-dial-events)).
+- Image and LED commands on this connection go to that FIP.
+
+Possible errors:
+
+| Reply | Cause |
+|---|---|
+| `error:Device '…' is not valid` | `Data` is not a GUID |
+| `error:Device '…' cannot be managed remotely` | No FIP with that ID is active in SPAD.neXt. Request the device list again and use the current `ID`. |
+
+Select **once per connection**. To control a different FIP, open a new connection
+(you can keep several connections open, one per FIP).
+
+## 6. Sending images
+
+Images are sent as **binary** WebSocket messages:
+
+| Bytes | Content |
+|---|---|
+| 0–3 | Image format, 32-bit integer, **little-endian** |
+| 4… | Image data |
+
+The FIP screen is **320 × 240 pixels**.
+
+| Format | Value | Header bytes | Image data |
+|---|---|---|---|
+| Image file | `2` | `02 00 00 00` | An image file (PNG, JPEG, BMP, GIF), normal orientation. **Recommended.** |
+| Image file, upside down | `1` | `01 00 00 00` | Same as `2`, but the image must already be flipped vertically (top row at the bottom). |
+| Raw pixels | `3` | `03 00 00 00` | Exactly 230,400 bytes of uncompressed pixels (see below). |
+
+### Format 2: image file (recommended)
+
+Send any PNG, JPEG, BMP or GIF file in normal orientation.
+
+- The image must be **at least 320 × 240 pixels**. SPAD.neXt does not scale it.
+  It uses the top-left 320 × 240 area and ignores the rest. A smaller image is rejected with an `error:` reply.
+- PNG is a good choice: lossless and small for typical instrument graphics.
+- Transparency is not supported. Draw on an opaque background.
+
+### Format 1: image file, upside down
+
+Like format 2, but SPAD.neXt does not flip the image. Use it if your rendering already produces
+bottom-up images (for example, raw bitmap buffers in bottom-up order). Otherwise use format 2.
+
+### Format 3: raw pixels
+
+Use this format for the highest frame rate, because SPAD.neXt does not need to decode an image file.
+
+- Exactly **230,400 bytes** = 320 × 240 pixels × 3 bytes. Any other size gets `error:wrong image size`.
+- 3 bytes per pixel in the order **blue, green, red** (8 bits each).
+- 960 bytes per row, no padding between rows.
+- Rows from **top to bottom**, pixels in each row from **left to right**.
+
+### Frame rate
+
+There is no acknowledgement for images. SPAD.neXt processes the messages of one connection one after
+another. Send a new image only when the content has changed, and do not send faster than you need
+(the FIP itself updates at a limited rate). If you send too fast, the messages queue up and the display lags behind.
+
+## 7. Switching button LEDs (`ledchange`)
+
+Each of the 8 soft buttons has an LED.
+
+```
+command:{"Command":"ledchange","Target":"FIP_BUTTON_S1","Data":1}
+```
+
+| Field | Type | Meaning |
+|---|---|---|
+| `Target` | string | Button name, see the table below (exact spelling, upper case) |
+| `Data` | number | `1` = on, `0` = off |
+
+Button names:
+
+| `Target` | Button |
+|---|---|
+| `FIP_BUTTON_S1` … `FIP_BUTTON_S6` | Soft buttons 1–6 on the left side of the screen (top to bottom) |
+| `FIP_BUTTON_PAGEUP` | Page up button |
+| `FIP_BUTTON_PAGEDOWN` | Page down button |
+
+- No reply on success.
+- `error:No Target` if `Target` is missing or empty.
+- An unknown button name is ignored without an error. Check the spelling if an LED does not change.
+- LEDs are either on or off. Flashing is not supported; switch the LED yourself if you need it to flash.
+
+## 8. Receiving button and dial events
+
+After `select`, SPAD.neXt sends a message for every button press, button release and dial step:
+
+```
+event:{ … "EventName":"FIP_BUTTON_S3","EventTrigger":"PRESS","EventData":{"Serial":"…"} … }
+```
+
+Only use these three fields. The JSON contains more fields; ignore them, they can change between versions.
+
+| Field | Meaning |
+|---|---|
+| `EventName` | What was used (button, dial, or `DEVICE`) |
+| `EventTrigger` | What happened |
+| `EventData` | Extra values. Always contains `Serial` (serial number of the FIP). |
+
+Events:
+
+| `EventName` | `EventTrigger` | `EventData` | Meaning |
+|---|---|---|---|
+| `FIP_BUTTON_S1` … `FIP_BUTTON_S6` | `PRESS` / `RELEASE` | `Serial` | Soft button pressed / released |
+| `FIP_BUTTON_PAGEUP`, `FIP_BUTTON_PAGEDOWN` | `PRESS` / `RELEASE` | `Serial` | Page button pressed / released |
+| `FIP_RIGHTDIAL` | `TUNER_CLOCKWISE` / `TUNER_COUNTERCLOCKWISE` | `Serial` | Right dial turned one step |
+| `FIP_LEFTDIAL` | `TUNER_CLOCKWISE` / `TUNER_COUNTERCLOCKWISE` | `Serial` | Left dial turned one step |
+| `DEVICE` | `BRIGHTNESS` | `Serial`, `Value` | Screen brightness was changed in SPAD.neXt |
+
+Dials send one event per step. Turning fast sends many events in a row.
+
+## 9. Errors
+
+Errors arrive as text messages that start with `error:`. The rest is a human-readable description.
+Show or log it, but do not rely on the exact wording.
+
+| Reply | Cause |
+|---|---|
+| `error:Device '…' is not valid` | `select` with an ID that is not a GUID |
+| `error:Device '…' cannot be managed remotely` | `select` with an unknown or inactive ID |
+| `error:no device selected` | Image or LED command before a successful `select` |
+| `error:No Target` | `ledchange` without `Target` |
+| `error:wrong image size` | Format 3 with a size other than 230,400 bytes |
+| `error:unkown binary message` | Binary message shorter than 4 bytes |
+| `error:unkown/unsupported binary message` | Unknown image format number |
+| `error:<description>` | The image file could not be decoded, or is smaller than 320 × 240 |
+| `error: ProcessRequest failed with '…'` | Malformed text message (for example no colon, or invalid JSON) |
+
+The connection stays open after an error.
+
+Text messages with an unknown type and unknown commands are ignored without a reply.
+
+## 10. Behavior you need to know
+
+- **The FIP stays under remote control until SPAD.neXt is restarted.** Closing your connection does not give the
+  FIP back to SPAD.neXt; it keeps showing your last image and SPAD.neXt does not draw its gauges again.
+  Reconnect and `select` again to continue, or restart SPAD.neXt to return to normal operation.
+- **The FIP's buttons keep working in SPAD.neXt as well.** If the user has assigned actions to the FIP buttons in
+  their SPAD.neXt profile, those actions still run. Your program gets the events in addition, not instead.
+- **One FIP per connection.** Do not send `select` twice on the same connection; you would get every event twice.
+  Use one connection per FIP.
+- **Several programs can select the same FIP.** All of them get the events, and their images overwrite each other.
+  Make sure only one program draws on a FIP.
+- **After SPAD.neXt restarts, the IDs can change.** Always take the `ID` from a fresh `connect` reply.
+- **Reconnect handling:** if the connection drops (for example SPAD.neXt was closed), reconnect, send `connect:`,
+  then `select` again and redraw the screen and the LEDs.
+
+## 11. Complete example (Python)
+
+Requires Python 3.9+, `pip install websockets pillow`.
+
+```python
+import asyncio
+import json
+import struct
+from io import BytesIO
+
+import websockets
+from PIL import Image, ImageDraw
+
+URL = "ws://localhost:28001/MANAGE"
+
+FORMAT_IMAGE = 2  # image file, normal orientation
+FORMAT_RAW = 3    # 320x240, BGR, top to bottom
+
+
+def make_image(text):
+    img = Image.new("RGB", (320, 240), "black")
+    draw = ImageDraw.Draw(img)
+    draw.rectangle((10, 10, 309, 229), outline="lime", width=3)
+    draw.text((30, 110), text, fill="white")
+    return img
+
+
+def png_frame(img):
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    return struct.pack("<i", FORMAT_IMAGE) + buf.getvalue()
+
+
+def raw_frame(img):
+    r, g, b = img.convert("RGB").split()
+    bgr = Image.merge("RGB", (b, g, r)).tobytes()  # 230400 bytes, rows top to bottom
+    return struct.pack("<i", FORMAT_RAW) + bgr
+
+
+async def wait_for(ws, msg_type):
+    """Read messages until one of the given type arrives. Returns its payload."""
+    while True:
+        message = await ws.recv()
+        kind, _, payload = message.partition(":")
+        if kind.lower() == msg_type:
+            return payload
+        if kind.lower() == "error":
+            raise RuntimeError(payload)
+
+
+async def main():
+    async with websockets.connect(URL, max_size=None) as ws:
+        # 1. Device list
+        await ws.send("connect:")
+        info = json.loads(await wait_for(ws, "connect"))
+        devices = info.get("Devices") or []
+        if not devices:
+            print("No FIP connected")
+            return
+        device_id = devices[0]["ID"]
+        print("SPAD.neXt", info.get("Version"), "- using FIP", devices[0].get("Serial"))
+
+        # 2. Take control
+        await ws.send("command:" + json.dumps({"Command": "select", "Data": device_id}))
+        print(await wait_for(ws, "msg"))
+
+        # 3. Draw and switch an LED
+        await ws.send(png_frame(make_image("Hello from Python")))
+        await ws.send("command:" + json.dumps({"Command": "ledchange", "Target": "FIP_BUTTON_S1", "Data": 1}))
+
+        # 4. React to buttons and dials
+        counter = 0
+        async for message in ws:
+            kind, _, payload = message.partition(":")
+            if kind == "error":
+                print("Error:", payload)
+                continue
+            if kind != "event":
+                continue
+            event = json.loads(payload)
+            name, trigger = event.get("EventName"), event.get("EventTrigger")
+            if name == "FIP_RIGHTDIAL":
+                counter += 1 if trigger == "TUNER_CLOCKWISE" else -1
+                await ws.send(raw_frame(make_image(f"Counter: {counter}")))
+            elif trigger == "PRESS":
+                await ws.send(png_frame(make_image(f"{name} pressed")))
+
+
+asyncio.run(main())
+```
+
+The same flow works in any language with a WebSocket client: send text messages for `connect`/`command`,
+and binary messages with a 4-byte little-endian format number followed by the image for drawing.
+
+## 12. Quick reference
+
+```
+ws://<spad-pc>:28001/MANAGE
+
+→ connect:
+← connect:{"Version":…,"Devices":[{"ID":"<guid>","Serial":…,"DeviceType":1}]}
+
+→ command:{"Command":"select","Data":"<guid>"}
+← msg:device '<guid>' selected
+
+→ [binary] 02 00 00 00 + PNG/JPEG/BMP/GIF (≥ 320×240, normal orientation)
+→ [binary] 01 00 00 00 + image file, flipped vertically
+→ [binary] 03 00 00 00 + 230400 bytes BGR, top to bottom
+
+→ command:{"Command":"ledchange","Target":"FIP_BUTTON_S1","Data":1|0}
+
+← event:{…"EventName":"FIP_BUTTON_S1","EventTrigger":"PRESS"|"RELEASE","EventData":{"Serial":…}…}
+← event:{…"EventName":"FIP_RIGHTDIAL"|"FIP_LEFTDIAL","EventTrigger":"TUNER_CLOCKWISE"|"TUNER_COUNTERCLOCKWISE"…}
+← event:{…"EventName":"DEVICE","EventTrigger":"BRIGHTNESS","EventData":{"Serial":…,"Value":…}…}
+← error:<text>
+```
