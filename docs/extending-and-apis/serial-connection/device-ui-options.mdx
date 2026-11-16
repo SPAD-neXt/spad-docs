@@ -24,6 +24,7 @@ The options on this page are new in SPAD.neXt 27. Earlier versions ignore them.
 | `CUSTOM_TYPE` = `HAT` | input | Shows the input as a hat switch |
 | `IMG_OFF.OPACITY` | LED input | Dims the ON image of an image LED while the LED is off |
 | `ALIAS` | inherited input | Gives an input of an inherited description the device's own tag |
+| `<panel>.BACKLIGHT_IMAGE` | device | Image over the panel image while the device backlight is on |
 
 ## Groups
 
@@ -99,4 +100,16 @@ A device description can inherit a shared description, for example the standard 
     <Option Key="ALIAS" Value="L_GLARE_FCU_LATDOT" />
   </Input>
 </AddonDevice>
+```
+
+## Backlight image
+
+**`<panel>.BACKLIGHT_IMAGE`** (device) puts an image over the panel image of the sub panel `<panel>` (the image of `<panel>.IMAGE`). It is shown while the backlight of the device is on, that is while the device variable `BACKLIGHT` is 1 or more, and takes the size of the panel image. Use a transparent image with only the lit parts.
+
+```xml
+<Option Key="FCU.IMAGE" Value="_PanelImages/fcu/Background.png" />
+<Option Key="FCU.BACKLIGHT_IMAGE" Value="_PanelImages/fcu/backlight.png" />
+<Variable Key="BACKLIGHT" Value="0">
+  <Option Key="ONCHANGE" Value="1" />
+</Variable>
 ```
