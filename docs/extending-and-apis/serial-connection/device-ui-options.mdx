@@ -113,3 +113,36 @@ A device description can inherit a shared description, for example the standard 
   <Option Key="ONCHANGE" Value="1" />
 </Variable>
 ```
+
+## Image canvas
+
+**`CUSTOM_TYPE` `CANVAS`** (with `UI.TYPE` 3) draws an input, LED or a plain picture as a canvas of images, the way a panel picture with buttons, switches, dials and lamps works. The canvas follows its input or LED without a programmable of its own, so it can also show a target only the UI uses (for example a mode dial that several switches turn through `UI.ROUTETO`).
+
+- **`BEHAVIOR`**: how the canvas reacts.
+  - `OnOff`: shows `IMG_ON` while the input is pressed or switched on, otherwise `IMG_OFF`.
+  - `ShowImage`: for a 3-colour LED, shows the image of the colour (`IMG_OFF`, `IMG_RED`, `IMG_GREEN`, `IMG_YELLOW`).
+  - `Rotate` / `RotateAbsolute`: turns `IMG_ROTATE` with an encoder, or to the position of a rotary switch.
+  - `None`: a still picture.
+- **`IMG_<state>`**: one image per state; any other name (for example `IMG_IMAGE`) is a still image of the canvas.
+- **`IMG_<state>.LEFT` / `.TOP`**: position of the image inside the canvas; **`IMG_<state>.WIDTH` / `.HEIGHT`**: its size.
+- **`LABEL.LEFT` / `LABEL.TOP`**: adds the label text of the canvas at that position, for example the mode name a rotary switch shows (`UI.LABEL` of the switch); **`LABEL.FONT`** `LCDFONT` uses the LED font, **`LABEL.FOREGROUND`** its colour.
+
+```xml
+<Input Type="UI" Tag="BUTTON_1" Width="51" Height="26" Left="80" Top="35">
+  <Option Key="UI.TYPE" Value="3" />
+  <Option Key="CUSTOM_TYPE" Value="CANVAS" />
+  <Option Key="BEHAVIOR" Value="OnOff" />
+  <Option Key="IMG_OFF" Value="_PanelImages/HDG_Off.png" />
+  <Option Key="IMG_ON" Value="_PanelImages/HDG_On.png" />
+</Input>
+```
+
+## Joystick layout files
+
+A joystick with a shipped configuration (`<VID>/<PID>/deviceConfiguration.xml`) can lay out each of its sub panels with a description file **`<VID>/<PID>/layout_<n>.xml`** (root `<AddonDevice>`), where `<n>` is the sub panel of the switches (`InputSubPanel`).
+
+- Its options go to the device page, for example the panel picture and size `<n>.IMAGE`, `<n>.WIDTH`, `<n>.HEIGHT`.
+- Each `<Input>` with the tag of a switch gives that switch its position (`Left`, `Top`, `Width`, `Height`) and options.
+- An `<Input>` without a switch (`Type="UI"`) is added as it is: a picture or a target only the UI uses.
+- Switches of the sub panel that the file does not place are not shown.
+- The tab of the sub panel shows the configuration option `SUBPANEL_<n>_LABEL`.
