@@ -22,6 +22,7 @@ The options on this page are new in SPAD.neXt 27. Earlier versions ignore them.
 | `UI.GROUP.<group>.DOCK` | device | Where a group stands |
 | `UI.GROUP.<group>.ORIENTATION` | device | How the inputs inside a group are arranged |
 | `CUSTOM_TYPE` = `HAT` | input | Shows the input as a hat switch |
+| `IMG_OFF.OPACITY` | LED input | Dims the ON image of an image LED while the LED is off |
 
 ## Groups
 
@@ -68,5 +69,17 @@ An input with `UI.TYPE` = `3` and `CUSTOM_TYPE` = `HAT` is shown as a hat switch
   <Option Key="HATSWITCH_POV_COUNT" Value="8" />
   <Option Key="UI.TYPE" Value="3" />
   <Option Key="CUSTOM_TYPE" Value="HAT" />
+</Input>
+```
+
+## LED image dimmed while off
+
+An LED with `UI.FACE` = `3` shows the image `IMG_ON` while on and `IMG_OFF` while off. With **`IMG_OFF.OPACITY`** and no `IMG_OFF`, the ON image stays visible and is dimmed to this opacity (0 to 1) while the LED is off. This suits printed mode texts that light up, such as SPD, MACH or LVL/CH on an FCU.
+
+```xml
+<Input Type="LED" Tag="L_GLARE_FCU_SPD" Width="27" Height="9" Canvas.Left="51" Canvas.Top="16">
+  <Option Key="UI.FACE" Value="3" />
+  <Option Key="IMG_ON" Value="_PanelImages/fcu/SPD.png" />
+  <Option Key="IMG_OFF.OPACITY" Value="0.5" />
 </Input>
 ```
