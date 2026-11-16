@@ -23,6 +23,7 @@ The options on this page are new in SPAD.neXt 27. Earlier versions ignore them.
 | `UI.GROUP.<group>.ORIENTATION` | device | How the inputs inside a group are arranged |
 | `CUSTOM_TYPE` = `HAT` | input | Shows the input as a hat switch |
 | `IMG_OFF.OPACITY` | LED input | Dims the ON image of an image LED while the LED is off |
+| `ALIAS` | inherited input | Gives an input of an inherited description the device's own tag |
 
 ## Groups
 
@@ -82,4 +83,20 @@ An LED with `UI.FACE` = `3` shows the image `IMG_ON` while on and `IMG_OFF` whil
   <Option Key="IMG_ON" Value="_PanelImages/fcu/SPD.png" />
   <Option Key="IMG_OFF.OPACITY" Value="0.5" />
 </Input>
+```
+
+## Inherited input under the device's own tag
+
+A device description can inherit a shared description, for example the standard FCU: `<AddonDevice Inherit="_Std/fcu.xml">`. When the device names one of the inherited inputs differently, **`ALIAS`** gives that input the device's tag. The input keeps everything the shared description defines (position, images, options), but the device, its profiles, scripts and variables use the device's own tag.
+
+- Set `ALIAS` on an input of the inheriting file, with the tag of the inherited input as `Tag`.
+- The inherited input is renamed to the `ALIAS` value; no input with the inherited tag remains.
+
+```xml
+<AddonDevice Inherit="_Std/fcu.xml">
+  <!-- the heading dot of the standard FCU is L_GLARE_FCU_LATDOT on this device -->
+  <Input Type="LED" Tag="L_GLARE_FCU_HDGDOT">
+    <Option Key="ALIAS" Value="L_GLARE_FCU_LATDOT" />
+  </Input>
+</AddonDevice>
 ```
