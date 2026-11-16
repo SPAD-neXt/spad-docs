@@ -26,7 +26,6 @@ The options on this page are new in SPAD.neXt 27. Earlier versions ignore them.
 | `ALIAS` | inherited input | Gives an input of an inherited description the device's own tag |
 | `<panel>.BACKLIGHT_IMAGE` | device | Image over the panel image while the device backlight is on |
 | `CUSTOM_TYPE` = `CANVAS` | input, LED, picture | Draws the element as a canvas of images (`BEHAVIOR`, `IMG_<state>`) |
-| `layout_<n>.xml` | joystick data folder | Lays out sub panel `<n>` of a joystick |
 
 ## Groups
 
@@ -138,13 +137,3 @@ A device description can inherit a shared description, for example the standard 
   <Option Key="IMG_ON" Value="_PanelImages/HDG_On.png" />
 </Input>
 ```
-
-## Joystick layout files
-
-A joystick with a shipped configuration (`<VID>/<PID>/deviceConfiguration.xml`) can lay out each of its sub panels with a description file **`<VID>/<PID>/layout_<n>.xml`** (root `<AddonDevice>`), where `<n>` is the sub panel of the switches (`InputSubPanel`).
-
-- Its options go to the device page, for example the panel picture and size `<n>.IMAGE`, `<n>.WIDTH`, `<n>.HEIGHT`.
-- Each `<Input>` with the tag of a switch gives that switch its position (`Left`, `Top`, `Width`, `Height`) and options.
-- An `<Input>` without a switch (`Type="UI"`) is added as it is: a picture or a target only the UI uses.
-- Switches of the sub panel that the file does not place are not shown.
-- The tab of the sub panel shows the configuration option `SUBPANEL_<n>_LABEL`.
