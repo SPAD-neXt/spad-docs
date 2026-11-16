@@ -125,7 +125,7 @@ A device description can inherit a shared description, for example the standard 
   - `Rotate` / `RotateAbsolute`: turns `IMG_ROTATE` with an encoder, or to the position of a rotary switch.
   - `None`: a still picture.
 - **`IMG_<state>`**: one image per state; any other name (for example `IMG_IMAGE`) is a still image of the canvas.
-- **`IMG_<state>.LEFT` / `.TOP`**: position of the image inside the canvas; **`IMG_<state>.WIDTH` / `.HEIGHT`**: its size.
+- **`IMG_<state>.LEFT` / `.TOP`**: position of the image inside the canvas; **`IMG_<state>.WIDTH` / `.HEIGHT`**: its size. **`IMG_<state>.ANGLE`**: turns the image by that many degrees around **`.CENTERX` / `.CENTERY`**.
 - **`LABEL.LEFT` / `LABEL.TOP`**: adds the label text of the canvas at that position, for example the mode name a rotary switch shows (`UI.LABEL` of the switch); **`LABEL.FONT`** `LCDFONT` uses the LED font, **`LABEL.FOREGROUND`** its colour.
 
 ```xml
