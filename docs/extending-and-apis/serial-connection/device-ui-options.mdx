@@ -26,6 +26,7 @@ The options on this page are new in SPAD.neXt 27. Earlier versions ignore them.
 | `ALIAS` | inherited input | Gives an input of an inherited description the device's own tag |
 | `<panel>.BACKLIGHT_IMAGE` | device | Image over the panel image while the device backlight is on |
 | `CUSTOM_TYPE` = `CANVAS` | input, LED, picture | Draws the element as a canvas of images (`BEHAVIOR`, `IMG_<state>`) |
+| `CUSTOM_TYPE` = `SLIDER` | picture | A slider that shows and writes a device variable |
 
 ## Groups
 
@@ -123,10 +124,14 @@ A device description can inherit a shared description, for example the standard 
   - `OnOff`: shows `IMG_ON` while the input is pressed or switched on, otherwise `IMG_OFF`.
   - `ShowImage`: for a 3-colour LED, shows the image of the colour (`IMG_OFF`, `IMG_RED`, `IMG_GREEN`, `IMG_YELLOW`).
   - `Rotate` / `RotateAbsolute`: turns `IMG_ROTATE` with an encoder, or to the position of a rotary switch.
+  - `Move`: moves `IMG_MOVE` down with the value of the axis of the same tag, by **`DIRECTIONFUNC`** pixels (an expression of `value`, 0 to 1; default `value*100.0`).
   - `None`: a still picture.
 - **`IMG_<state>`**: one image per state; any other name (for example `IMG_IMAGE`) is a still image of the canvas.
 - **`IMG_<state>.LEFT` / `.TOP`**: position of the image inside the canvas; **`IMG_<state>.WIDTH` / `.HEIGHT`**: its size. **`IMG_<state>.ANGLE`**: turns the image by that many degrees around **`.CENTERX` / `.CENTERY`**.
-- **`LABEL.LEFT` / `LABEL.TOP`**: adds the label text of the canvas at that position, for example the mode name a rotary switch shows (`UI.LABEL` of the switch); **`LABEL.FONT`** `LCDFONT` uses the LED font, **`LABEL.FOREGROUND`** its colour.
+- **`LABEL.LEFT` / `LABEL.TOP`**: adds the label text of the canvas at that position, for example the mode name a rotary switch shows (`UI.LABEL` of the switch); **`LABEL.FONT`** `LCDFONT` uses the LED font, any other value is a font installed on the computer; **`LABEL.FONTSIZE`** its size, **`LABEL.FOREGROUND`** its colour.
+- **`LABEL.VARIABLE`**: the label shows the value of this device variable instead, formatted by **`LABEL.FORMAT`** (`{0}` is the value, for example `Mode {0}`).
+- **`UI.TARGET`**: a second clickable area of an input that the picture shows twice. The element gets a tag of its own; a click selects the input named here.
+- **`ANGLE`**: turns the whole element by that many degrees around its centre.
 
 ```xml
 <Input Type="UI" Tag="BUTTON_1" Width="51" Height="26" Left="80" Top="35">
@@ -135,5 +140,20 @@ A device description can inherit a shared description, for example the standard 
   <Option Key="BEHAVIOR" Value="OnOff" />
   <Option Key="IMG_OFF" Value="_PanelImages/HDG_Off.png" />
   <Option Key="IMG_ON" Value="_PanelImages/HDG_On.png" />
+</Input>
+```
+
+## Slider
+
+**`CUSTOM_TYPE` `SLIDER`** (with `UI.TYPE` 3) draws a vertical slider in the size of the element. It shows the device variable **`VARIABLE`** and writes it when moved; a variable with a `.SET` expression runs it (for example a brightness). **`MIN`** / **`MAX`** set the range, **`TICK`** the distance of the tick marks.
+
+```xml
+<Input Type="UI" Tag="SLIDER_BRIGHTNESS" Width="26" Height="133" Left="280" Top="158">
+  <Option Key="UI.TYPE" Value="3" />
+  <Option Key="CUSTOM_TYPE" Value="SLIDER" />
+  <Option Key="VARIABLE" Value="BRIGHTNESS" />
+  <Option Key="MIN" Value="0" />
+  <Option Key="MAX" Value="127" />
+  <Option Key="TICK" Value="16" />
 </Input>
 ```
