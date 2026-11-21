@@ -28,6 +28,7 @@ The options on this page are new in SPAD.neXt 27. Earlier versions ignore them.
 | `<panel>.BACKLIGHT_IMAGE` | device | Image over the panel image while the device backlight is on |
 | `CUSTOM_TYPE` = `CANVAS` | input, LED, picture | Draws the element as a canvas of images (`BEHAVIOR`, `IMG_<state>`) |
 | `CUSTOM_TYPE` = `SLIDER` | picture | A slider that shows and writes a device variable |
+| `UI.DISPLAY_TYPE` = `2` | display | Shows the CDU screen the device logic draws |
 
 ## Groups
 
@@ -156,5 +157,21 @@ A device description can inherit a shared description, for example the standard 
   <Option Key="MIN" Value="0" />
   <Option Key="MAX" Value="127" />
   <Option Key="TICK" Value="16" />
+</Input>
+```
+
+## CDU screen
+
+**`UI.DISPLAY_TYPE` `2`** (display) shows a CDU screen on the device page: the screen of a device that has no display of its own, for example a CDU keyboard whose text SPAD.neXt draws. The device logic creates the screen; the display element only places it.
+
+- The element's `Width`, `Height`, `Left` and `Top` place the screen.
+- **`FONTSIZE`** (default 9), **`ROWHEIGHT`** (default 9) and **`COLWIDTH`** (default 6) size the characters of the 14 x 24 character grid.
+- The screen can also be detached into the separate CDU display program, which shows it in its own window (also on another computer).
+
+```xml
+<Input Type="DISPLAY" Tag="CDU_DISPLAY" Inherit="SPAD_SEGMENT_DISPLAY" Width="217" Height="176" Left="46" Top="32">
+  <Option Key="Rows" Value="14"/>
+  <Option Key="Length" Value="24"/>
+  <Option Key="UI.DISPLAY_TYPE" Value="2"/>
 </Input>
 ```
