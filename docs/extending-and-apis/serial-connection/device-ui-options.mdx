@@ -29,6 +29,7 @@ The options on this page are new in SPAD.neXt 27. Earlier versions ignore them.
 | `CUSTOM_TYPE` = `CANVAS` | input, LED, picture | Draws the element as a canvas of images (`BEHAVIOR`, `IMG_<state>`) |
 | `CUSTOM_TYPE` = `SLIDER` | picture | A slider that shows and writes a device variable |
 | `UI.DISPLAY_TYPE` = `2` | display | Shows the CDU screen the device logic draws |
+| `UI.ROTATE`, `FONTWEIGHT` | LED text plate | Turns the text of a text plate LED, makes it bold or normal |
 
 ## Groups
 
@@ -173,5 +174,24 @@ A device description can inherit a shared description, for example the standard 
   <Option Key="Rows" Value="14"/>
   <Option Key="Length" Value="24"/>
   <Option Key="UI.DISPLAY_TYPE" Value="2"/>
+</Input>
+```
+
+## Text plate LED: rotation and weight
+
+A LED with **`UI.FACE`** `2` is a text plate: its **`LABEL`** in **`FOREGROUND.ON`** while the LED is on and in **`FOREGROUND.OFF`** while it is off (`Transparent` hides it). Two options shape the text:
+
+- **`UI.ROTATE`**: degrees the text is turned, for example `90` for a vertical annunciator. With 90 or 270 the text runs along the height of the element.
+- **`FONTWEIGHT`**: `Bold` (default) or `Normal`.
+
+```xml
+<Input Type="LED" Tag="L_MCDU_FAIL" Inherit="SPAD_LED" Width="8" Height="25" Left="313" Top="100">
+  <Option Key="UI.FACE" Value="2"/>
+  <Option Key="NOIMG" Value="1"/>
+  <Option Key="LABEL" Value="FAIL"/>
+  <Option Key="Font" Value="LCDFONT"/>
+  <Option Key="FOREGROUND.ON" Value="#FF0000"/>
+  <Option Key="FOREGROUND.OFF" Value="Transparent"/>
+  <Option Key="UI.ROTATE" Value="90"/>
 </Input>
 ```
