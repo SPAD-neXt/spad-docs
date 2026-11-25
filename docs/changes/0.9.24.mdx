@@ -8,7 +8,68 @@ import TabItem from "@theme/TabItem"
 
 # 0.9.24
 
-**2026-03-28**
+## 2026-11-25 Configuration updates
+
+Default variable units changed to match MSFS definitions. See [MSSF SDK](https://docs.flightsimulator.com/msfs2024/flighting/programming-apis/simvars/simulation-variable-units/) for details on the units.
+<table data-header-hidden><thead><tr><th>Name</th><th>old unit</th><th>new unit</th></tr></thead><tbody>
+<tr><td>ADF STANDBY AVAILABLE</td><td>Shared Cockpit</td><td>Bool</td></tr>
+<tr><td>AIRSPEED TRUE RAW</td><td>NUMBER</td><td>knots</td></tr>
+<tr><td>AMBIENT PRECIP RATE</td><td>NUMBER</td><td>millimeter of water</td></tr>
+<tr><td>AMBIENT PRESSURE</td><td>inHg</td><td>millibars</td></tr>
+<tr><td>AMBIENT WIND VELOCITY</td><td>Knots</td><td>feet per second</td></tr>
+<tr><td>AMBIENT WIND X</td><td>Meters per second</td><td>feet per second</td></tr>
+<tr><td>AMBIENT WIND Y</td><td>Meters per second</td><td>feet per second</td></tr>
+<tr><td>AMBIENT WIND Z</td><td>Meters per second</td><td>feet per second</td></tr>
+<tr><td>ATC CURRENT WAYPOINT ALTITUDE</td><td>Bool</td><td>meters</td></tr>
+<tr><td>ATC FLIGHTPLAN DIFF ALT</td><td>Meters</td><td>Bool</td></tr>
+<tr><td>ATC FLIGHTPLAN DIFF HEADING</td><td>Degrees</td><td>Bool</td></tr>
+<tr><td>AUTOPILOT DEFAULT PITCH MODE</td><td>BOOL</td><td>Enum</td></tr>
+<tr><td>AUTOPILOT DEFAULT ROLL MODE</td><td>BOOL</td><td>Enum</td></tr>
+<tr><td>AUTOPILOT MACH HOLD VAR</td><td>MACH</td><td>number</td></tr>
+<tr><td>AUTOPILOT THROTTLE MAX THRUST</td><td>NUMBER</td><td>percent</td></tr>
+<tr><td>BRAKE INDICATOR</td><td>Position</td><td>Enum</td></tr>
+<tr><td>BRAKE PARKING INDICATOR</td><td>Bool</td><td>Enum</td></tr>
+<tr><td>BRAKE PARKING POSITION</td><td>Position</td><td>Bool</td></tr>
+<tr><td>CONTACT POINT COMPRESSION</td><td>Position</td><td>percent over 100</td></tr>
+<tr><td>CONTACT POINT POSITION</td><td>Position</td><td>percent over 100</td></tr>
+<tr><td>DRONE CAMERA FOCUS</td><td>Percentage</td><td>meters</td></tr>
+<tr><td>DRONE CAMERA FOV</td><td>Percentage</td><td>radians</td></tr>
+<tr><td>DRONE CAMERA SPEED ROTATION</td><td>Percentage</td><td>radians per second</td></tr>
+<tr><td>DRONE CAMERA SPEED TRAVELLING</td><td>Percentage</td><td>meter per second</td></tr>
+<tr><td>ELEVATOR POSITION</td><td>Radians</td><td>position 16k</td></tr>
+<tr><td>ELEVATOR TRIM INDICATOR</td><td>Radians</td><td>position</td></tr>
+<tr><td>ENG ELECTRICAL LOAD</td><td>Percent</td><td>percent scaler 16k</td></tr>
+<tr><td>ENG FUEL PRESSURE</td><td>PSI</td><td>psi scaler 16k</td></tr>
+<tr><td>ENG TRANSMISSION PRESSURE</td><td>PSI</td><td>psi scaler 16k</td></tr>
+<tr><td>ENG TRANSMISSION TEMPERATURE</td><td>Celsius</td><td>celsius scaler 16k</td></tr>
+<tr><td>ENG TURBINE TEMPERATURE</td><td>Celsius</td><td>celsius scaler 16k</td></tr>
+<tr><td>FUELSYSTEM ENGINE PRESSURE</td><td>Kilo pascal</td><td>kPa</td></tr>
+<tr><td>FUELSYSTEM LINE FUEL PRESSURE</td><td>Kilo pascal</td><td>kPa</td></tr>
+<tr><td>FUELSYSTEM PUMP SWITCH</td><td>BOOL</td><td>Enum</td></tr>
+<tr><td>FUELSYSTEM TANK LEVEL</td><td>gallons</td><td>percent over 100</td></tr>
+<tr><td>FUELSYSTEM VALVE OPEN</td><td>Bool</td><td>percent over 100</td></tr>
+<tr><td>GEAR ANIMATION POSITION</td><td>Number</td><td>keyframe</td></tr>
+<tr><td>GEAR AUX STEER ANGLE</td><td>Percent Over 100</td><td>radians</td></tr>
+<tr><td>GEAR CENTER STEER ANGLE</td><td>Percent Over 100</td><td>radians</td></tr>
+<tr><td>GEAR LEFT STEER ANGLE</td><td>Percent Over 100</td><td>radians</td></tr>
+<tr><td>GEAR RIGHT STEER ANGLE</td><td>Percent Over 100</td><td>radians</td></tr>
+<tr><td>GEAR STEER ANGLE</td><td>Percent Over 100</td><td>radians</td></tr>
+<tr><td>GENERAL ENG FUEL PRESSURE</td><td>Psi</td><td>psf</td></tr>
+<tr><td>GPS HAS GLIDEPATH</td><td>Bool</td><td>meters</td></tr>
+<tr><td>MARSHALLER AIRCRAFT ENGINE SHUTDOWN</td><td>RADIANS</td><td>Bool</td></tr>
+<tr><td>NAV LOC RUNWAY NUMBER</td><td>String</td><td>Enum</td></tr>
+<tr><td>ORNITHOPTER CONTROL LEVERS X</td><td>POSITION 16K</td><td>position</td></tr>
+<tr><td>ORNITHOPTER CONTROL LEVERS Y</td><td>POSITION 16K</td><td>position</td></tr>
+<tr><td>ORNITHOPTER CONTROL LEVERS Z</td><td>POSITION 16K</td><td>position</td></tr>
+<tr><td>TACAN OBS</td><td>Bool</td><td>Degrees</td></tr>
+<tr><td>TACAN STATION DISTANCE</td><td>Meter</td><td>meters</td></tr>
+<tr><td>TACAN STATION RADIAL</td><td>Degrees</td><td>degrees angl16</td></tr>
+<tr><td>TURB ENG INLET TEMPERATURE</td><td>Number</td><td>rankine</td></tr>
+<tr><td>WATER LEFT RUDDER STEER ANGLE</td><td>Percent Over 100</td><td>radians</td></tr>
+<tr><td>WATER RIGHT RUDDER STEER ANGLE</td><td>Percent Over 100</td><td>radians</td></tr></tbody></table>
+
+
+## 2026-03-28 0.9.24.26 Release
 
 * X-Plane: Update Plugin to v6.12
 * Devices WinCtrl: Add AGP Support
@@ -32,8 +93,6 @@ import TabItem from "@theme/TabItem"
 * Devices Skalarki: Add DCDU Support
 * GoFlight/OpenCockpits: relax interface stress
 * MSFS24: Add Inibuilds A300/A340 CDU Support
-
-
 
 * Expose LOCAL:SIM_PAUSE (0/1), LOCAL:SIM_PAUSE_EX1 , LOCAL:SIM_PAUSED (0/1) 
 * SPAD Serial: Add UI.INACTIVE=1 to make an element non-interactable in spad ui
