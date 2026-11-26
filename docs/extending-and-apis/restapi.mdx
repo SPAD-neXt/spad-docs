@@ -9,3 +9,48 @@ import TabItem from "@theme/TabItem"
 # RestAPI
 
 SPAD.neXt exposes a public ServiceStack Rest / web api which can be opened at http://127.0.0.1:28001
+
+## Data subscription (WebSocket)
+
+To get value changes pushed instead of asking for them, connect to the data WebSocket:
+
+`ws://127.0.0.1:28001/data`
+
+From another computer use the address of the SPAD.neXt computer and add your api key: `ws://<address>:28001/data?apikey=<your api key>`. On the same computer no key is needed.
+
+All messages are text messages with one JSON object.
+
+**You send**
+
+| `cmd` | Fields | Meaning |
+| --- | --- | --- |
+| `subscribe` | `dataRefs`: list of names | Subscribe to data. The current values are sent right away. |
+| `unsubscribe` | `dataRefs`: list of names, empty = all | Stop receiving data. |
+| `config` | `interval`: milliseconds | Changes are collected and sent every 500 ms by default. `0` sends every change at once. |
+| `requestupdate` | | Send all subscribed values again. |
+
+Add an `id` to a command and the reply carries the same `id`.
+
+**SPAD.neXt sends**
+
+| `type` | Fields | Meaning |
+| --- | --- | --- |
+| `connected` | `version`, `interval` | The connection is ready. |
+| `reply` | `cmd`, `id`, `success`, `message`; for `subscribe` also `subscribed`, `failed` | Answer to a command. |
+| `update` | `data`: name and value pairs | Changed values. |
+
+```
+-> {"cmd":"subscribe","id":1,"dataRefs":["A:INDICATED ALTITUDE,FEET","LOCAL:MYVAR"]}
+<- {"type":"reply","cmd":"subscribe","id":1,"success":true,"subscribed":["A:INDICATED ALTITUDE,FEET","LOCAL:MYVAR"],"failed":[]}
+<- {"type":"update","data":{"A:INDICATED ALTITUDE,FEET":1250.4,"LOCAL:MYVAR":0.0}}
+```
+
+Subscriptions end when the connection is closed. After a reconnect subscribe again.
+
+A complete example with HTML gauges: [DemoCode/WebSocket/GaugeDemo-JS](https://github.com/SPAD-neXt/DemoCode/tree/main/WebSocket/GaugeDemo-JS).
+
+:::note
+
+Server-Sent Events (`/event-stream` with `/data/subscribe/{Session}` or `/serialapi/{Session}/...`) are no longer supported. Use the data WebSocket above. For a serial device over the network use `ws://<address>:28001/serialapi/<deviceGuid>/SPAD/<instance>`.
+
+:::
