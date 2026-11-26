@@ -1,0 +1,113 @@
+---
+title: "Full access"
+description: All controls of the cab and all values of the game
+sidebar_position: 3
+---
+
+# Full access
+
+In this mode SPAD.neXt uses everything the game offers: every control of the cab you sit in, and values such as speed, signals, speed limits, brake pressures, time and weather.
+
+Set **Train Sim World: Access mode** to **Full** ([Setup and settings](./setup.mdx)).
+
+Everything is listed in the data browser under **Train Sim World**.
+
+## Controls of the cab
+
+### By role
+
+The game gives many controls a role, for example `Throttle`, `Reverser`, `Horn` or `Wipers`. SPAD.neXt offers each role under the same name on every train:
+
+| Name | Meaning |
+|---|---|
+| `TSW:Control.Throttle` | The control with the role Throttle in the cab you sit in |
+| `TSW:Control.Handbrake.2` | The second control with that role, if a cab has more than one |
+| `TSW:Control.Throttle.Min`, `.Max` | Lowest and highest value of that control (read only) |
+| `TSW:Control.Throttle.Default` | Rest position of that control (read only) |
+
+Roles found on a DB BR 193 Vectron, as an example: `Throttle`, `Reverser`, `AutomaticBrake`, `IndependentBrake`, `DynamicBrake`, `EmergencyBrake`, `Handbrake`, `Horn`, `HornAlt`, `Wipers`, `Headlights`, `Sand`, `Alerter`, `Pantograph`, `CircuitBreaker`, `CruiseControl`, `PZB_Acknowledge`, `PZB_Release`, `PZB_Override`. An American diesel has others, for example `Bell`, `BailOff` and `EngineStartStop`. The data browser shows the roles of your train under **Cab controls by role** once you sit in the cab.
+
+Good to know:
+
+- **The value is the value of the game, and its range differs from train to train.** The throttle of the Vectron goes from -1 (full brake) to 1 (full power), a horn lever from 0 to 1 with its rest position at 0.5. Use `.Min`, `.Max` and `.Default` to find out, or to scale an axis.
+- **The names follow you.** When you change the cab or the train, the same name points to the control of the new cab.
+- **A role the train does not have** keeps its last value, and writing to it does nothing.
+- **Not every control has a role.** Those are reached by their game name, see below.
+
+### By game name
+
+Every control of the cab can also be used by the name the game gives it. These names are listed under **Cab controls by game name**, for example:
+
+`TSW:DriverInput/Horn_F.InputValue`
+
+These names differ from train to train and often between the front and the rear cab (`Horn_F`, `Horn_B`).
+
+### The first time in a cab
+
+When you sit down in a cab SPAD.neXt has not seen before, it asks the game for the role of every control. That takes a few seconds. During that time the controls do not react to SPAD.neXt yet. SPAD.neXt remembers the cab, so the next time, also after a restart, it is ready at once.
+
+While you are walking and not sitting in a cab, there are no controls.
+
+## Holding a control
+
+Some controls are sprung: a horn lever goes back to its rest position as soon as you let go. The game treats a value written from outside the same way. Without anything else the horn would only give a short blast, however long you keep your button pressed.
+
+With the setting **Train Sim World: Hold controls automatically** switched on (the default), SPAD.neXt holds a control for you:
+
+- When SPAD.neXt moves a control away from its rest position, it keeps it there, like keeping a key pressed in the game.
+- When SPAD.neXt moves the control back to its rest position, it lets go.
+
+So for a horn button: write the value for "horn" when the button is pressed, and write the rest position (`TSW:Control.Horn.Default`) when the button is released.
+
+You can still operate a held control with keyboard or mouse in the game.
+
+:::note
+If you switch the setting off, SPAD.neXt only writes the value. You can then hold a control yourself by writing 1 to its `Interacting` value and 0 to let go, for example `TSW:DriverInput/Horn_F.Interacting`.
+:::
+
+## Values from the game
+
+These names are the same on every train. They can be shown on displays, used for LEDs and used in conditions.
+
+| Group | Examples | Unit |
+|---|---|---|
+| **HUD** | `TSW:HUD.Speed`, `TSW:HUD.SpeedControlTarget`, `TSW:HUD.MaxPermittedSpeed` | km/h |
+| | `TSW:HUD.BrakeGauge1.WhiteNeedle`, `TSW:HUD.BrakeGauge1.RedNeedle`, `TSW:HUD.BrakeGauge2.WhiteNeedle` | millibars |
+| | `TSW:HUD.Ammeter`, `TSW:HUD.TractiveEffort`, `TSW:HUD.BrakeEffort`, `TSW:HUD.EngineRPM1`, `TSW:HUD.GearIndex` | amperes, newtons, rpm |
+| | `TSW:HUD.IsSlipping`, `TSW:HUD.IsTractionLocked`, `TSW:HUD.Alerter` | 1 = yes, 0 = no |
+| | Steam locomotives: `TSW:HUD.SteamBoilerPressure`, `TSW:HUD.BoilerWaterLevel`, `TSW:HUD.FireboxCoalLevel` and more | |
+| **Driver aid** | `TSW:DriverAid.SpeedLimit`, `TSW:DriverAid.NextSpeedLimit` | km/h |
+| | `TSW:DriverAid.DistanceToNextSpeedLimit`, `TSW:DriverAid.DistanceToSignal` | meters |
+| | `TSW:DriverAid.SignalAspect` | text, for example `Clear` or `Stop` |
+| | `TSW:DriverAid.NextSignal1.Aspect`, `TSW:DriverAid.NextSignal1.Distance` (also 2 and 3) | text, meters |
+| | `TSW:DriverAid.Gradient` | |
+| **Time** | `TSW:Time.LocalTime`, `TSW:Time.SunriseTime`, `TSW:Time.SunsetTime` | seconds since midnight |
+| **Weather** | `TSW:Weather.Temperature`, `TSW:Weather.Precipitation`, `TSW:Weather.Cloudiness`, `TSW:Weather.FogDensity` and more | |
+| **Player** | `TSW:Player.Latitude`, `TSW:Player.Longitude`, `TSW:Player.CameraMode`, `TSW:Player.ServiceName` | degrees, text |
+
+The complete list with a description of every value is in the data browser.
+
+Good to know:
+
+- **Other units.** In the data browser you can choose a converter for a value, for example *Kilometers per hour to Mph*, *Millibars to Psi*, *Millibars to Bar* or *Meters to Yards*.
+- **Signals that are not there.** If the game reports fewer than three signals ahead, the aspect of the missing ones is empty and their distance is 0.
+- **A value the HUD does not show** is reported as not active, for example `TSW:HUD.MaxPermittedSpeed.IsActive` is 0 and the speed itself is negative.
+- **The weather can be changed.** Writing to a `TSW:Weather.` value overrides the weather of the game.
+
+## Everything else: game paths
+
+The game has many more values than the list above, and they differ from train to train. Every one of them can be used by the path the game gives it, with `TSW:` in front:
+
+`TSW:CurrentDrivableActor.Function.HUD_GetSpeed`
+
+If an answer of the game has several values, add `@` and the name of the value. For a value inside another value, add its path:
+
+`TSW:CurrentDrivableActor.Function.HUD_GetBrakeGauge_1@WhiteNeedle (Pa)`
+
+`TSW:DriverAid.Data@nextSignals[0].value`
+
+Values used this way are not converted: they are in the units of the game (meters per second, pascal, centimeters), and they are numbers only. Texts are available through the names in the list above.
+
+## The RailDriver names in this mode
+
+The names of [RailDriver access](./raildriver-access.mdx) also work in Full access. As soon as you write to one of them, the game switches to SPAD.neXt as its RailDriver desk and ignores a real RailDriver device until SPAD.neXt is closed. If you use a real RailDriver, do not use these names.

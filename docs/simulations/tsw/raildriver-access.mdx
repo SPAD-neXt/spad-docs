@@ -1,0 +1,63 @@
+---
+title: "RailDriver access"
+description: SPAD.neXt acts as a RailDriver desk
+sidebar_position: 2
+---
+
+# RailDriver access
+
+In this mode SPAD.neXt acts as a **RailDriver desk**. Train Sim World knows this desk and has its levers and buttons already assigned for every train. You only connect your hardware to the levers and buttons of the desk, and it works on every train without a profile per train.
+
+Set **Train Sim World: Access mode** to **RailDriver** ([Setup and settings](./setup.mdx)).
+
+## What you get
+
+All names start with `TSW:VirtualRailDriver.` and are listed in the data browser under **Train Sim World > Virtual RailDriver**.
+
+**Levers** (value 0 to 1, the position of the lever on the desk)
+
+| Name | Lever of the desk |
+|---|---|
+| `TSW:VirtualRailDriver.Reverser` | Reverser |
+| `TSW:VirtualRailDriver.Throttle` | Throttle |
+| `TSW:VirtualRailDriver.AutoBrake` | Automatic (train) brake |
+| `TSW:VirtualRailDriver.IndependentBrake` | Independent (locomotive) brake |
+| `TSW:VirtualRailDriver.BailOff` | Bail off |
+| `TSW:VirtualRailDriver.RotarySwitch1` | Rotary switch 1 |
+| `TSW:VirtualRailDriver.RotarySwitch2` | Rotary switch 2 |
+
+**Buttons** (1 = pressed, 0 = released)
+
+| Name | Button of the desk |
+|---|---|
+| `TSW:VirtualRailDriver.FrontTopRow1` to `FrontTopRow14` | Upper row of the 28 programmable buttons |
+| `TSW:VirtualRailDriver.FrontBottomRow1` to `FrontBottomRow14` | Lower row of the 28 programmable buttons |
+| `TSW:VirtualRailDriver.RockerUp`, `RockerDown` | Rocker switch |
+| `TSW:VirtualRailDriver.DPadUp`, `DPadRight`, `DPadDown`, `DPadLeft` | Direction pad |
+| `TSW:VirtualRailDriver.RangeForward`, `RangeBack` | Range switch |
+| `TSW:VirtualRailDriver.EStopForward`, `EStopBack` | Emergency stop |
+| `TSW:VirtualRailDriver.Alerter` | Alerter |
+| `TSW:VirtualRailDriver.Sand` | Sand |
+| `TSW:VirtualRailDriver.PButton` | P button |
+| `TSW:VirtualRailDriver.Bell` | Bell |
+| `TSW:VirtualRailDriver.HornForward`, `HornBack` | Horn lever forward / back |
+
+### Typical use
+
+- **A lever of your hardware**: assign the axis to `TSW:VirtualRailDriver.Throttle` and let it send its position as a value from 0 to 1.
+- **A button**: set the value to 1 when the button is pressed and to 0 when it is released. Do not forget the release, otherwise the horn keeps sounding.
+
+## What a lever or button does
+
+That is decided by the game, for each train, exactly as for a real RailDriver desk. Two examples from the DB BR 193 Vectron:
+
+- Rotary switch 1 works the wipers, rotary switch 2 the headlights.
+- The Vectron has one combined lever for power and brake. The middle of the throttle lever (around 0.5) is neutral, higher values give power and lower values brake.
+
+You can still use keyboard and mouse in the game at the same time.
+
+## What does not work in this mode
+
+- **No values from the game.** Speed, signals, brake pressures and so on cannot be read. Displays and LEDs cannot show anything from the train. Use [Full access](./full-access.mdx) for that.
+- **Only what a RailDriver desk has.** Controls that are not on the desk (for example pantograph, doors, safety systems) cannot be reached.
+- **No real RailDriver at the same time.** While SPAD.neXt is connected in this mode, the game ignores a real RailDriver device. When SPAD.neXt is closed, the real device works again.

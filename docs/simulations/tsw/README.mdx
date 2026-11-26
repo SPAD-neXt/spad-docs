@@ -1,0 +1,37 @@
+---
+title: "Train Sim World"
+description: Connect your hardware to Train Sim World 7
+---
+
+# Train Sim World
+
+SPAD.neXt can connect to **Train Sim World 7** and drive a train with your hardware: levers, buttons, switches, displays and LEDs.
+
+The connection uses an interface that is built into the game. You do not have to install anything into the game, but the game has to be started with one extra launch option. See [Setup and settings](./setup.mdx).
+
+:::note
+Train Sim World 6 has the same interface, but only Train Sim World 7 has been tested.
+:::
+
+## Two ways to access the game
+
+You choose one of two access modes in the SPAD.neXt settings.
+
+| | RailDriver | Full |
+|---|---|---|
+| What it is | SPAD.neXt acts as a RailDriver desk | SPAD.neXt uses everything the game offers |
+| Controls | The levers and buttons of a RailDriver, the same names on every train | Every control of the cab you sit in |
+| Reading values (speed, signals, pressures, time, weather) | No | Yes |
+| A real RailDriver device at the same time | No, the game switches it off | Yes, as long as you do not use the RailDriver names |
+| Best for | A quick start, simple setups | Displays, LEDs and controls a RailDriver does not have |
+
+- [RailDriver access](./raildriver-access.mdx)
+- [Full access](./full-access.mdx)
+
+## One profile per train
+
+SPAD.neXt shows the train you are driving where it shows the aircraft for a flight simulator, and it switches to the profile you assigned to that train, the same way it does for aircraft.
+
+The name is the one the game uses internally, for example `RVM_NWB_DB_Vectron_C`. The same locomotive from another route can have another name, for example `RVM_KWG_RP_Vectron_C`. Each of them is its own entry.
+
+When you leave the cab and walk, the last train stays selected.
