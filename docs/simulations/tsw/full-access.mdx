@@ -31,7 +31,7 @@ Good to know:
 
 - **The value is the value of the game, and its range differs from train to train.** The throttle of the Vectron goes from -1 (full brake) to 1 (full power), a horn lever from 0 to 1 with its rest position at 0.5. Use `.Min`, `.Max` and `.Default` to find out, or to scale an axis.
 - **The names follow you.** When you change the cab or the train, the same name points to the control of the new cab.
-- **A role the train does not have** keeps its last value, and writing to it does nothing.
+- **A role the train does not have** has the value 0, and writing to it does nothing. The same goes for all roles while you are not sitting in a cab. So an LED that shows the pantograph goes off when you change to a diesel locomotive or leave the cab.
 - **Not every control has a role.** Those are reached by their game name, see below.
 
 ### By game name
@@ -46,7 +46,7 @@ These names differ from train to train and often between the front and the rear 
 
 When you sit down in a cab SPAD.neXt has not seen before, it asks the game for the role of every control. That takes a few seconds. During that time the controls do not react to SPAD.neXt yet. SPAD.neXt remembers the cab, so the next time, also after a restart, it is ready at once.
 
-While you are walking and not sitting in a cab, there are no controls.
+While you are walking and not sitting in a cab, there are no controls. Their values are 0 until you sit down again.
 
 ## Holding a control
 
@@ -90,7 +90,7 @@ The complete list with a description of every value is in the data browser.
 Good to know:
 
 - **Other units.** In the data browser you can choose a converter for a value, for example *Kilometers per hour to Mph*, *Millibars to Psi*, *Millibars to Bar* or *Meters to Yards*.
-- **Signals that are not there.** If the game reports fewer than three signals ahead, the aspect of the missing ones is empty and their distance is 0.
+- **Values that are not there are 0.** If the game reports fewer than three signals ahead, the aspect of the missing ones is empty and their distance is 0. `TSW:DriverAid.ServiceMaxSpeed` is 0 when the service has no speed limit of its own. A value the current train does not have at all is 0 as well.
 - **A value the HUD does not show** is reported as not active, for example `TSW:HUD.MaxPermittedSpeed.IsActive` is 0 and the speed itself is negative.
 - **The weather can be changed.** Writing to a `TSW:Weather.` value overrides the weather of the game.
 
