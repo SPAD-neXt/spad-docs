@@ -1,0 +1,64 @@
+---
+title: "Setup and settings"
+description: Launch option of the game and the settings in SPAD.neXt
+sidebar_position: 1
+---
+
+# Setup and settings
+
+## 1. Start the game with the launch option -HTTPAPI
+
+The interface of the game is switched off by default. It is switched on with the launch option `-HTTPAPI`.
+
+**Steam**
+
+1. Open your Steam library and right-click **Train Sim World 7**.
+2. Choose **Properties**.
+3. On the **General** page, type `-HTTPAPI` into **Launch Options**.
+4. Close the window and start the game.
+
+**Epic Games**
+
+1. Open the Epic Games Launcher and click your profile picture, then **Settings**.
+2. Scroll down to **Train Sim World 7** and open it.
+3. Tick **Additional Command Line Arguments** and type `-HTTPAPI`.
+4. Start the game.
+
+When the game starts with this option for the first time, it creates a key file named `CommAPIKey.txt` in your Documents folder, under `My Games\TrainSimWorld7\Saved\Config`. SPAD.neXt finds and reads this file by itself. You do not have to copy anything.
+
+:::note
+The game and SPAD.neXt have to run on the same PC.
+:::
+
+## 2. Switch on Train Sim World support in SPAD.neXt
+
+Open **Settings** in SPAD.neXt and go to the group **Simulations**.
+
+| Setting | Default | Meaning |
+|---|---|---|
+| **Train Sim World Support** | Off | Switches the connection to the game on. |
+| **Train Sim World: Access mode** | RailDriver | **RailDriver**: SPAD.neXt acts as a RailDriver desk. **Full**: all controls and values of the game. See [RailDriver access](./raildriver-access.mdx) and [Full access](./full-access.mdx). |
+| **Train Sim World: Poll interval (ms)** | 100 | How often SPAD.neXt reads values from the game. 100 means ten times a second. There is normally no reason to change it. |
+| **Train Sim World: Hold controls automatically** | On | Only for Full access. See [Holding a control](./full-access.mdx#holding-a-control). |
+| **Train Sim World: Disconnect grace period (s)** | 60 | How long SPAD.neXt keeps treating the game as connected after it stopped answering, in seconds. The game does not answer while it loads a scenario. This matters for the tray icon and for the setting that closes SPAD.neXt when the simulation ends: without the grace period, loading a scenario would close SPAD.neXt. |
+
+:::warning
+Restart SPAD.neXt after you changed one of these settings. They are read when SPAD.neXt starts.
+:::
+
+## 3. Check the connection
+
+The order in which you start the game and SPAD.neXt does not matter. SPAD.neXt keeps trying until the game answers, and it connects again by itself after the game was restarted.
+
+The status display of SPAD.neXt shows **Train Sim World** with one of these texts:
+
+| Status | What to do |
+|---|---|
+| connected | Nothing. Everything works. |
+| game not running or started without the launch option -HTTPAPI | Start the game. If it is running, check the launch option (step 1) and restart the game. |
+| API key file CommAPIKey.txt not found (start the game once with the launch option -HTTPAPI) | Start the game once with the launch option. The game creates the file. |
+| the game rejected the API key | Restart the game and SPAD.neXt. If you have more than one Train Sim World version installed, start the one you want to use once with the launch option. |
+
+Values of the train are only available while you are driving. In the main menu SPAD.neXt is connected, but there is no train yet.
+
+While the game loads a scenario it does not answer for some seconds. The status display shows that, and SPAD.neXt connects again by itself. Nothing has to be done.
