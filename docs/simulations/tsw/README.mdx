@@ -37,3 +37,11 @@ Train Sim World has its own list of assignments, separate from the flight simula
 The name is the one the game uses internally, for example `RVM_NWB_DB_Vectron_C`. The same locomotive from another route can have another name, for example `RVM_KWG_RP_Vectron_C`. Each of them is its own entry.
 
 When you leave the cab and walk, the last train stays selected.
+
+## Flight events
+
+SPAD.neXt raises the event **FLIGHT_STARTED** when you take your first train after the game was started or after you came back from the main menu.
+
+:::warning
+**FLIGHT_ENDED is not supported with Train Sim World.** It is not raised when you leave the cab: in many scenarios you leave the cab in between, to couple wagons or to change to another train, and the drive is not over. Do not use FLIGHT_ENDED in a Train Sim World profile.
+:::
