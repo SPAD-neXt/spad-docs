@@ -43,7 +43,7 @@ When you leave the cab and walk, the last train stays selected.
 | Event | When |
 |---|---|
 | **FLIGHT_STARTED** | You take your first train after the game was started or after you came back from the main menu. |
-| **FLIGHT_ENDED** | You go back to the main menu of the game, or you close the game. |
+| **FLIGHT_ENDED** | You go back to the main menu of the game. Also when you close the game, after the disconnect grace period (see [Setup and settings](./setup.mdx)). |
 
 :::warning
 **FLIGHT_ENDED is not raised when you leave the cab.** In many scenarios you leave the cab in between, to couple wagons or to change to another train, and the drive is not over. Changing to another train does not raise FLIGHT_STARTED again either.
