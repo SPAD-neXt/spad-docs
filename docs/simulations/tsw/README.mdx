@@ -48,3 +48,7 @@ When you leave the cab and walk, the last train stays selected.
 :::warning
 **FLIGHT_ENDED is not raised when you leave the cab.** In many scenarios you leave the cab in between, to couple wagons or to change to another train, and the drive is not over. Changing to another train does not raise FLIGHT_STARTED again either.
 :::
+
+:::note
+**FLIGHT_STARTED and automatic profile switching.** When you take your first train, SPAD.neXt raises FLIGHT_STARTED and switches to the profile of that train at the same moment. FLIGHT_STARTED has then usually already run in the profile that was active before. For actions that should run when the profile of the train starts, use the event **Profile loaded** or **Aircraft changed** in that profile.
+:::
