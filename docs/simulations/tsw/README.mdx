@@ -40,8 +40,11 @@ When you leave the cab and walk, the last train stays selected.
 
 ## Flight events
 
-SPAD.neXt raises the event **FLIGHT_STARTED** when you take your first train after the game was started or after you came back from the main menu.
+| Event | When |
+|---|---|
+| **FLIGHT_STARTED** | You take your first train after the game was started or after you came back from the main menu. |
+| **FLIGHT_ENDED** | You go back to the main menu of the game, or you close the game. |
 
 :::warning
-**FLIGHT_ENDED is not supported with Train Sim World.** It is not raised when you leave the cab: in many scenarios you leave the cab in between, to couple wagons or to change to another train, and the drive is not over. Do not use FLIGHT_ENDED in a Train Sim World profile.
+**FLIGHT_ENDED is not raised when you leave the cab.** In many scenarios you leave the cab in between, to couple wagons or to change to another train, and the drive is not over. Changing to another train does not raise FLIGHT_STARTED again either.
 :::
