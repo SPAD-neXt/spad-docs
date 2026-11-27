@@ -90,6 +90,7 @@ The complete list with a description of every value is in the data browser.
 Good to know:
 
 - **Other units.** In the data browser you can choose a converter for a value, for example *Kilometers per hour to Mph*, *Millibars to Psi*, *Millibars to Bar* or *Meters to Yards*.
+- **Two decimal places.** The values of this table are rounded to two decimal places. The values of the controls (`TSW:Control.`) stay exactly as the game reports them.
 - **Values that are not there are 0.** If the game reports fewer than three signals ahead, the aspect of the missing ones is empty and their distance is 0. `TSW:DriverAid.ServiceMaxSpeed` is 0 when the service has no speed limit of its own. A value the current train does not have at all is 0 as well.
 - **A value the HUD does not show** is reported as not active, for example `TSW:HUD.MaxPermittedSpeed.IsActive` is 0 and the speed itself is negative.
 - **The weather can be changed.** Writing to a `TSW:Weather.` value overrides the weather of the game.
