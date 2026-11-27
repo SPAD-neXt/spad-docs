@@ -30,6 +30,7 @@ The options on this page are new in SPAD.neXt 27. Earlier versions ignore them.
 | `CUSTOM_TYPE` = `SLIDER` | picture | A slider that shows and writes a device variable |
 | `UI.DISPLAY_TYPE` = `2` | display | Shows the CDU screen the device logic draws |
 | `UI.ROTATE`, `FONTWEIGHT` | LED text plate | Turns the text of a text plate LED, makes it bold or normal |
+| `UI.HIDE` = `0` | input, LED | Shows an element that `HIDDEN` hides, for example the LED of a button drawn on a panel image |
 
 ## Groups
 
@@ -97,6 +98,8 @@ A device description can inherit a shared description, for example the standard 
 
 - Set `ALIAS` on an input of the inheriting file, with the tag of the inherited input as `Tag`.
 - The inherited input is renamed to the `ALIAS` value; no input with the inherited tag remains.
+
+An input of the inheriting file with the same tag is merged onto the inherited one: its options and routes win, and its own mappings and output mappings replace those with the same `In`. When it has rotary positions, they replace the inherited ones. When it sets `Inherit` (for example `SPAD_PUSH_ONLY`), it is a full definition and its `Type` and `Inherit` are used. So a device can inherit a standard layout, which places the elements, and keep its own hardware mappings.
 
 ```xml
 <AddonDevice Inherit="_Std/fcu.xml">
@@ -193,5 +196,19 @@ A LED with **`UI.FACE`** `2` is a text plate: its **`LABEL`** in **`FOREGROUND.O
   <Option Key="FOREGROUND.ON" Value="#FF0000"/>
   <Option Key="FOREGROUND.OFF" Value="Transparent"/>
   <Option Key="UI.ROTATE" Value="90"/>
+</Input>
+```
+
+## Hidden LED on a panel image
+
+**`HIDDEN`** marks an element that is not configured on its own, for example the LED of a pushbutton that belongs to its button (`LED` option of the button). The device page does not show such an element either. A layout that draws it, such as the LED strip of a button on a panel image, sets **`UI.HIDE`** `0`: the element is shown, and it stays not selectable. `UI.HIDE` `1` hides any element on the page.
+
+```xml
+<Input Type="LED" Tag="L_N1" Width="38" Height="6" Left="164" Top="163">
+  <Option Key="PANEL" Value="MCP"/>
+  <Option Key="UI.FACE" Value="3"/>
+  <Option Key="IMG_ON" Value="_PanelImages/Button_LED.png"/>
+  <Option Key="IMG_OFF.OPACITY" Value="0"/>
+  <Option Key="UI.HIDE" Value="0"/>
 </Input>
 ```
